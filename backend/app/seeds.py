@@ -5,13 +5,6 @@ from . import db, bcrypt
 
 DEFAULT_PERMISSIONS = {
     'view_dashboard': 'Melihat halaman dashboard',
-    # Risk Management AI
-    'view_risk_assessment_ai': 'Melihat daftar Risk Assessment AI',
-    'create_risk_assessment_ai': 'Membuat Risk Assessment AI baru',
-    'edit_risk_assessment_ai': 'Mengedit Risk Assessment AI',
-    'delete_risk_assessment_ai': 'Menghapus Risk Assessment AI',
-    'view_risk_register_main': 'Melihat Risk Register Utama',
-    'manage_risk_register_main': 'Tambah/Edit/Hapus item di Risk Register Utama',
     # Risk Management Levels
     'view_risk_dasar': 'Melihat daftar Asesmen Dasar',
     'manage_risk_dasar': 'Membuat/Edit/Hapus Asesmen Dasar',
@@ -19,35 +12,13 @@ DEFAULT_PERMISSIONS = {
     'manage_risk_madya': 'Membuat/Edit/Hapus Asesmen Madya',
     'view_risk_templates': 'Melihat daftar Template Peta Risiko',
     'manage_risk_templates': 'Membuat/Edit/Hapus Template Peta Risiko',
-    # Modules
-    'view_rsca': 'Melihat tugas & siklus RSCA',
-    'submit_rsca': 'Mengisi dan mengirim jawaban RSCA',
-    'view_bpr': 'Melihat menu Business Process Review',
-    'manage_bpr': 'Membuat dan Mengelola Business Process Review',
-    'approve_bpr': 'Menyetujui, Finalisasi, dan Membuat Header BPR (Manajer)',
-    'view_bia': 'Melihat halaman BIA',
-    'run_bia_simulation': 'Menjalankan simulasi BIA',
-    'manage_critical_assets': 'Mengelola Aset Kritis & Dependensi (BIA)',
-    'view_addons_menu': 'Melihat menu Add-ons',
-    'view_cba_calculator': 'Melihat CBA Calculator',
-    'view_monte_carlo': 'Melihat Monte Carlo Simulator',
-    'view_horizon_scanner': 'Melihat Horizon Scanner',
-    # Quick Risk Check
-    'view_qrc_menu': 'Melihat menu induk Quick Risk Scan',
-    'view_qrc_client': 'Melihat Dashboard QRC Client',
-    'submit_qrc_assessment': 'Mengisi dan mengirim Quick Risk Scan',
-    'view_qrc_consultant': 'Melihat Dashboard QRC Consultant',
-    'review_qrc_assessment': 'Melakukan review dan validasi asesmen QRC',
-    'manage_qrc_templates': 'Mengelola Template Pertanyaan QRC (Admin)',
     # Admin Area
     'view_admin_area': 'Mengakses menu Admin', # Permission umum untuk menu admin
     'manage_users': 'Melihat & Mengelola data pengguna (Admin)',
     'manage_roles': 'Melihat & Mengelola Roles & Permissions (Admin)',
     'manage_master_data': 'Mengelola Master Data (Admin)',
     'manage_regulations': 'Mengelola Master Regulasi (Admin)',
-    'manage_rsca_cycles': 'Membuat/Mengelola siklus RSCA (Admin)',
     'manage_departments': 'Membuat/Edit/Hapus Departemen (Admin Institusi)',
-    'view_mitigation_monitor': 'Melihat halaman Pemantauan Mitigasi (Rencana Aksi)',
 }
 
 # --- Perubahan 3: Buat fungsi seed Roles & Permissions ---
@@ -105,71 +76,6 @@ def seed_roles_permissions():
         db.session.add(user_role)
     
     assign_perms(user_role, ['view_dashboard'])
-
-    # 4. Seed Role Staf (Lini 1)
-    staff_role = Role.query.filter_by(name='Staf').first()
-    if not staff_role:
-        print("  Creating 'Staf' role...")
-        staff_role = Role(name='Staf', description='Akses Lini 1 (Operasional).')
-        db.session.add(staff_role)
-    
-    # Daftar Permission Wajib untuk Staf
-    staff_perms_list = [
-        'view_dashboard', 'view_addons_menu',
-        'view_rsca', 'submit_rsca',
-        'view_risk_dasar', 'view_risk_madya',
-        'view_bpr', 'manage_bpr' # Permission BPR
-    ]
-    assign_perms(staff_role, staff_perms_list)
-
-    # 5. Seed Role Manajer Risiko (Lini 2)
-    manager_role = Role.query.filter_by(name='Manajer Risiko').first()
-    if not manager_role:
-        print("  Creating 'Manajer Risiko' role...")
-        manager_role = Role(name='Manajer Risiko', description='Akses Lini 2 (Reviewer).')
-        db.session.add(manager_role)
-    
-    # Daftar Permission Wajib untuk Manajer Risiko
-    manager_perms_list = [
-        'view_dashboard',
-        'view_admin_area',
-        'manage_departments', 'manage_rsca_cycles',
-        'view_mitigation_monitor', 'view_addons_menu',
-        'view_horizon_scanner',
-        'view_bpr', 'manage_bpr', 'approve_bpr' # Permission BPR Lengkap
-    ]
-    assign_perms(manager_role, manager_perms_list)
-    
-    qrc_user_role = Role.query.filter_by(name='QRC User').first()
-    if not qrc_user_role:
-        print("  Creating 'QRC User' role...")
-        qrc_user_role = Role(name='QRC User', description='User Eksternal untuk Quick Risk Scan.')
-        db.session.add(qrc_user_role)
-    
-    assign_perms(qrc_user_role, ['view_qrc_menu', 'view_qrc_client', 'submit_qrc_assessment'])
-
-    qrc_consultant_role = Role.query.filter_by(name='QRC Consultant').first()
-    if not qrc_consultant_role:
-        print("  Creating 'QRC Consultant' role...")
-        qrc_consultant_role = Role(name='QRC Consultant', description='Konsultan Profesional Reviewer QRC.')
-        db.session.add(qrc_consultant_role)
-
-    qrc_consultant_perms = [
-        'view_qrc_menu',
-        'view_qrc_consultant', 
-        'review_qrc_assessment',
-        'view_dashboard',
-        'view_admin_area',
-        'manage_qrc_templates'
-    ]
-    assign_perms(qrc_consultant_role, qrc_consultant_perms)
-
-    try:
-        db.session.commit()
-        print("Roles and Permissions seeding committed successfully.")
-    except Exception as e:
-        db.session.rollback()
-        print(f"Error committing roles/permissions: {e}")
         
 def seed_admin():
     """Membuat akun admin jika belum ada."""

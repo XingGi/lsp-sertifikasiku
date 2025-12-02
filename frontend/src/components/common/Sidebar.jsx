@@ -41,19 +41,6 @@ import { useAuth } from "../../context/AuthContext";
 const menuItems = [
   { title: "Dashboard", path: "/dashboard", icon: <FiGrid />, requiredPermission: "view_dashboard" },
 
-  // GROUP: QUICK RISK CHECK (New)
-  {
-    key: "qrc",
-    title: "Quick Risk Scan",
-    icon: <FiZap className="text-yellow-400" />, // Icon warna spesial
-    requiredPermission: "view_qrc_menu",
-    children: [
-      { title: "QRC Asesmen", path: "/qrc/assessments", icon: <FiCheckSquare />, requiredPermission: "submit_qrc_assessment" },
-      { title: "QRC Consultant", path: "/qrc/consultant", icon: <FiPieChart />, requiredPermission: "view_qrc_consultant" },
-      { title: "Template QRC", path: "/qrc/templates", icon: <FiFileText />, requiredPermission: "view_admin_area" },
-    ],
-  },
-
   // GROUP: RISK LEVELS
   {
     key: "riskLevel",
@@ -63,44 +50,6 @@ const menuItems = [
       { title: "Asesmen Dasar", path: "/risk-management/dasar", icon: <FiArrowDownCircle />, requiredPermission: "view_risk_dasar" },
       { title: "Asesmen Madya", path: "/risk-management/madya", icon: <FiArrowRightCircle />, requiredPermission: "view_risk_madya" },
       { title: "Template Peta", path: "/risk-management/templates", icon: <FiMap />, requiredPermission: "view_risk_templates" },
-    ],
-  },
-
-  // GROUP: RISK AI
-  {
-    key: "riskAI",
-    title: "Risk AI",
-    icon: <FiCpu className="text-cyan-400" />, // Icon warna spesial
-    children: [
-      { title: "Risk Assessment", path: "/risk-ai/assessments", icon: <FiCheckSquare />, requiredPermission: "view_risk_assessment_ai" },
-      { title: "Risk Register", path: "/risk-ai/risk-register", icon: <FiList />, requiredPermission: "view_risk_register_main" },
-    ],
-  },
-
-  // GROUP: ADD-ONS
-  {
-    key: "addons",
-    title: "Add-ons",
-    icon: <FiBox />,
-    requiredPermission: "view_addons_menu",
-    children: [
-      {
-        key: "rsca",
-        title: "Modul RSCA",
-        icon: <FiFileText />,
-        requiredPermission: "view_rsca",
-        children: [
-          { title: "Tugas Kuesioner", path: "/addons/rsca", icon: <FiCheckSquare />, requiredPermission: "submit_rsca" },
-          { title: "Manajemen Siklus", path: "/admin/rsca", icon: <FiSettings />, requiredPermission: "manage_rsca_cycles" },
-          { title: "Manajemen Dept", path: "/admin/departments", icon: <FiBriefcase />, requiredPermission: "manage_departments" },
-          { title: "Pantau Mitigasi", path: "/admin/mitigation-monitor", icon: <FiActivity />, requiredPermission: "view_mitigation_monitor" },
-        ],
-      },
-      { title: "Modul BPR", path: "/addons/bpr", icon: <FiBarChart2 />, requiredPermission: "view_bpr" },
-      { title: "Horizon Scanner", path: "/addons/horizon-scanner", icon: <FiGlobe />, requiredPermission: "view_horizon_scanner" },
-      { title: "Modul BIA", path: "/addons/bia", icon: <FiAlertTriangle />, requiredPermission: "view_bia" },
-      { title: "CBA Calculator", path: "/addons/cba", icon: <HiCalculator />, requiredPermission: "view_cba_calculator" },
-      { title: "Monte Carlo", path: "/addons/monte-carlo", icon: <FiShuffle />, requiredPermission: "view_monte_carlo" },
     ],
   },
 
