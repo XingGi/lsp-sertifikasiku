@@ -309,7 +309,7 @@ function BasicAssessmentFormPage() {
               <label className="text-sm font-semibold text-slate-700 mb-1 block">
                 Nama Perusahaan <span className="text-red-500">*</span>
               </label>
-              <TextInput icon={FiHome} name="nama_perusahaan" value={formData.nama_perusahaan} onChange={handleChange} placeholder="Contoh: PT. Sirico Jaya Abadi" required />
+              <TextInput icon={FiHome} name="nama_perusahaan" value={formData.nama_perusahaan} onChange={handleChange} placeholder="Contoh: PT. Sertifikasi Maju Bersama" required />
             </div>
           </div>
         </Card>

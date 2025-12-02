@@ -1,6 +1,7 @@
 # backend/app/models/basic.py
 from app import db
 from datetime import datetime
+from sqlalchemy import Numeric
 
 # Tabel Asosiasi
 basic_assessment_contexts = db.Table('basic_assessment_contexts',
@@ -63,8 +64,9 @@ class BasicRiskAnalysis(db.Model):
     
     probabilitas = db.Column(db.Integer, nullable=True)
     dampak = db.Column(db.Integer, nullable=True)
-    probabilitas_kualitatif = db.Column(db.Float, nullable=True)
-    dampak_finansial = db.Column(db.Float, nullable=True)
+    
+    probabilitas_kualitatif = db.Column(db.Numeric(5, 2), nullable=True)
+    dampak_finansial = db.Column(db.Numeric(20, 2), nullable=True)
     
     assessment_id = db.Column(db.Integer, db.ForeignKey('basic_assessments.id'), nullable=False)
 

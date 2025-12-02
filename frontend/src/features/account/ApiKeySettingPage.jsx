@@ -59,7 +59,7 @@ const ApiKeySettingPage = () => {
               <FiKey /> Penting
             </h3>
             <p className="text-sm text-violet-700 leading-relaxed">
-              API Key ini digunakan untuk menghubungkan aplikasi SIRICO dengan layanan Google Gemini AI. Pastikan key yang Anda masukkan memiliki kuota yang cukup dan izin yang sesuai.
+              API Key ini digunakan untuk menghubungkan aplikasi LSP Sertifikasiku dengan layanan Google Gemini AI. Pastikan key yang Anda masukkan memiliki kuota yang cukup dan izin yang sesuai.
             </p>
           </div>
         </div>

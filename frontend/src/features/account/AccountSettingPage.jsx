@@ -19,7 +19,6 @@ function AccountSettingPage() {
       dasar: { count: 0, limit: 0 },
       madya: { count: 0, limit: 0 },
       template_peta: { count: 0, limit: 0 },
-      horizon: { count: 0, limit: 0 },
     },
   });
   const [isLoading, setIsLoading] = useState(true);

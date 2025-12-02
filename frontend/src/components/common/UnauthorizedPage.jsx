@@ -47,7 +47,7 @@ function UnauthorizedPage() {
 
           <div className="mt-8 text-sm text-gray-400">
             <FiHardDrive className="inline-block mr-2 text-gray-500" />
-            SIRICO Secure System - Integrity First
+            LSP Sertifikasiku Secure System - Integrity First
           </div>
         </Card>
       </motion.div>

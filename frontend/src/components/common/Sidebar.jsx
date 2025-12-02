@@ -251,7 +251,7 @@ function Sidebar({ isOpen, toggle }) {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
             <FiCommand className="text-white text-lg" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-white">SIRICO</span>
+          <span className="font-bold text-xl tracking-tight text-white">LSP Sertifikasiku</span>
         </div>
 
         {/* Toggle Button (Absolute Position agar rapi) */}

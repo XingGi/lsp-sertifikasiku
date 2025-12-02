@@ -14,7 +14,7 @@ function Navbar({ onLoginClick, onRegisterClick }) {
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
             <Link to="/" className="text-2xl font-bold text-slate-800">
-              SIRICO
+              LSP Sertifikasiku
             </Link>
           </div>
           <div className="flex items-center space-x-4">

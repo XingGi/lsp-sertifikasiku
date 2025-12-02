@@ -3,87 +3,101 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FiShield, FiBriefcase, FiBarChart2, FiAlertTriangle, FiArrowRight, FiCpu, FiLayers, FiCheckSquare, FiList, FiSearch, FiTrello, FiUser, FiUsers, FiTrendingUp, FiActivity, FiGlobe, FiLock } from "react-icons/fi";
+import { FiShield, FiCheckCircle, FiAward, FiUsers, FiArrowRight, FiBriefcase, FiTrendingUp, FiBookOpen, FiMonitor, FiPieChart, FiPhone, FiMail } from "react-icons/fi";
 import AuthModal from "../../components/auth/AuthModal";
 import Navbar from "../../components/common/Navbar";
 import Footer from "../../components/common/Footer";
 import { useAuth } from "../../context/AuthContext";
 
-// --- DATA FITUR (Updated Icons & Colors) ---
-const features = [
+// --- DATA PROGRAM SERTIFIKASI (Disesuaikan dengan referensi gambar) ---
+const programs = [
   {
-    icon: <FiCpu className="w-8 h-8 text-white" />,
-    bg: "bg-blue-500",
-    title: "Risk Management AI",
-    description: "AI canggih untuk identifikasi risiko otomatis, analisis mendalam, dan rekomendasi mitigasi cerdas dalam hitungan detik.",
+    icon: <FiMonitor className="w-8 h-8" />,
+    title: "Sertifikasi IT & Cyber Security",
+    description: "Validasi kompetensi teknis Anda dalam keamanan data, pengembangan perangkat lunak, dan manajemen infrastruktur TI.",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
   },
   {
-    icon: <FiLayers className="w-8 h-8 text-white" />,
-    bg: "bg-indigo-500",
-    title: "Asesmen Manual Terstruktur",
-    description: "Alur kerja sistematis (Dasar & Madya) untuk pemetaan risiko unit kerja yang komprehensif dan terstandarisasi.",
+    icon: <FiBriefcase className="w-8 h-8" />,
+    title: "Sertifikasi Manajemen Risiko",
+    description: "Standarisasi kemampuan dalam mengidentifikasi, menganalisis, dan memitigasi risiko bisnis sesuai standar ISO 31000.",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
   },
   {
-    icon: <FiCheckSquare className="w-8 h-8 text-white" />,
-    bg: "bg-emerald-500",
-    title: "RSCA (Self-Assessment)",
-    description: "Platform mandiri untuk departemen dalam menilai risiko dan efektivitas kontrol internal mereka sendiri.",
+    icon: <FiUsers className="w-8 h-8" />,
+    title: "Sertifikasi SDM (HR)",
+    description: "Tingkatkan profesionalisme dalam pengelolaan sumber daya manusia, rekrutmen, dan pengembangan talenta.",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
   },
   {
-    icon: <FiBarChart2 className="w-8 h-8 text-white" />,
-    bg: "bg-violet-500",
-    title: "Business Process Review",
-    description: "Visualisasi dan analisis risiko pada setiap tahapan proses bisnis untuk operasional yang lebih tangguh.",
+    icon: <FiBookOpen className="w-8 h-8" />,
+    title: "Sertifikasi Akuntansi",
+    description: "Sertifikasi profesi untuk bidang keuangan dan akuntansi yang diakui secara nasional maupun internasional.",
+    color: "text-cyan-600",
+    bg: "bg-cyan-50",
   },
   {
-    icon: <FiAlertTriangle className="w-8 h-8 text-white" />,
-    bg: "bg-rose-500",
-    title: "Business Impact Analysis",
-    description: "Simulasi dampak kegagalan aset kritis terhadap kelangsungan bisnis dengan prediksi kerugian kuantitatif.",
+    icon: <FiTrendingUp className="w-8 h-8" />,
+    title: "Sertifikasi Digital Marketing",
+    description: "Program sertifikasi untuk profesional pemasaran di era digital, mencakup SEO, SEM, dan Social Media Strategy.",
+    color: "text-purple-600",
+    bg: "bg-purple-50",
   },
   {
-    icon: <FiGlobe className="w-8 h-8 text-white" />,
-    bg: "bg-cyan-500",
-    title: "Horizon Scanning",
-    description: "Deteksi dini ancaman dan peluang strategis dari tren pasar global menggunakan intelijen berbasis data.",
+    icon: <FiPieChart className="w-8 h-8" />,
+    title: "Custom Corporate Training",
+    description: "Program pelatihan dan sertifikasi yang disesuaikan dengan kebutuhan spesifik industri perusahaan Anda.",
+    color: "text-rose-600",
+    bg: "bg-rose-50",
   },
 ];
 
-const userRoles = [
+// --- DATA KENAPA MEMILIH KAMI ---
+const features = [
   {
-    icon: <FiUser className="w-10 h-10 text-blue-600" />,
-    role: "Manajer Risiko",
-    needs: "Sentralisasi data risiko, pelaporan otomatis, dan alat analisis canggih.",
+    icon: <FiShield className="w-6 h-6" />,
+    title: "Terakreditasi BNSP",
+    desc: "Semua program sertifikasi kami terakreditasi oleh Badan Nasional Sertifikasi Profesi.",
   },
   {
-    icon: <FiUsers className="w-10 h-10 text-indigo-600" />,
-    role: "Pimpinan Unit",
-    needs: "Kemudahan input risiko operasional dan pemantauan status mitigasi tim.",
+    icon: <FiUsers className="w-6 h-6" />,
+    title: "Instruktur Berpengalaman",
+    desc: "Belajar langsung dari praktisi ahli dengan pengalaman industri lebih dari 10 tahun.",
   },
   {
-    icon: <FiTrendingUp className="w-10 h-10 text-emerald-600" />,
-    role: "Eksekutif (C-Level)",
-    needs: "Dashboard strategis, peta risiko visual, dan wawasan untuk pengambilan keputusan.",
+    icon: <FiCheckCircle className="w-6 h-6" />,
+    title: "Proses Cepat & Mudah",
+    desc: "Pendaftaran online yang mudah dengan proses sertifikasi yang cepat, transparan dan efisien.",
   },
+  {
+    icon: <FiAward className="w-6 h-6" />,
+    title: "Diakui Industri",
+    desc: "Sertifikat yang diakui oleh perusahaan-perusahaan terkemuka di Indonesia.",
+  },
+];
+
+// --- STATISTIK ---
+const stats = [
+  { number: "10,000+", label: "Profesional Tersertifikasi" },
+  { number: "50+", label: "Program Sertifikasi" },
+  { number: "500+", label: "Perusahaan Mitra" },
+  { number: "98%", label: "Tingkat Kepuasan" },
 ];
 
 // --- ANIMATION VARIANTS ---
-const containerVariants = {
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { duration: 0.5 },
+    transition: { staggerChildren: 0.2 },
   },
 };
 
@@ -107,242 +121,164 @@ function LandingPage() {
   };
 
   return (
-    <div className="font-sans text-slate-800 bg-white selection:bg-blue-100">
+    <div className="font-sans text-slate-800 bg-white selection:bg-cyan-100">
       <Navbar onLoginClick={handleOpenLogin} onRegisterClick={handleOpenRegister} />
 
-      {/* --- HERO SECTION (MODERN & COLORFUL) --- */}
-      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        {/* Background Blobs */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-400/20 blur-3xl filter mix-blend-multiply opacity-70 animate-blob"></div>
-          <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-400/20 blur-3xl filter mix-blend-multiply opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-[500px] h-[500px] rounded-full bg-pink-400/20 blur-3xl filter mix-blend-multiply opacity-70 animate-blob animation-delay-4000"></div>
+      {/* --- HERO SECTION (Based on Reference) --- */}
+      <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-400">
+        {/* Decorative Circles */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-[-10%] left-[-5%] w-72 h-72 bg-cyan-300/20 rounded-full blur-2xl"></div>
         </div>
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Text Content */}
-            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className="text-center lg:text-left">
-              <div className="inline-block px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-bold mb-6 shadow-sm">🚀 Platform GRC Masa Depan</div>
-              <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-6">
-                Kelola Risiko dengan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Kecerdasan AI</span>
-              </h1>
-              <p className="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                SIRICO menggabungkan manajemen risiko tradisional dengan kekuatan Artificial Intelligence. Identifikasi, analisis, dan mitigasi risiko bisnis Anda lebih cepat, akurat, dan terintegrasi dalam satu platform modern.
-              </p>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-4xl mx-auto">
+            <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold mb-8 shadow-lg">
+              <FiCheckCircle /> Lembaga Sertifikasi Profesi Terpercaya
+            </motion.div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                {user ? (
-                  <Link
-                    to="/dashboard"
-                    className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1"
+            <motion.h1 variants={fadeInUp} className="text-4xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
+              Tingkatkan Karier dengan <br />
+              <span className="text-amber-300">Sertifikasi Profesional</span>
+            </motion.h1>
+
+            <motion.p variants={fadeInUp} className="text-lg lg:text-xl text-blue-50 mb-8 leading-relaxed max-w-2xl mx-auto">
+              LSP-Sertifikasiku memberikan sertifikasi berkualitas tinggi yang diakui industri untuk mengembangkan kompetensi profesional Anda ke level berikutnya.
+            </motion.p>
+
+            {/* Trust Badges (Pills) */}
+            <motion.div variants={fadeInUp} className="flex flex-wrap justify-center gap-3 mb-10">
+              {["Terakreditasi BNSP", "Instruktur Berpengalaman", "Sertifikat Resmi"].map((badge, idx) => (
+                <div key={idx} className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-white text-sm font-medium backdrop-blur-md border border-white/20">
+                  <FiCheckCircle className="text-cyan-300" /> {badge}
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center">
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-blue-700 bg-white rounded-xl shadow-xl hover:shadow-2xl hover:bg-blue-50 transition-all transform hover:-translate-y-1"
+                >
+                  Masuk Dashboard <FiArrowRight className="ml-2" />
+                </Link>
+              ) : (
+                <>
+                  <button
+                    onClick={handleOpenRegister}
+                    className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-amber-500 rounded-xl shadow-lg shadow-amber-500/30 hover:bg-amber-400 transition-all transform hover:-translate-y-1"
                   >
-                    Masuk Dashboard <FiArrowRight className="ml-2" />
-                  </Link>
-                ) : (
-                  <>
-                    <button
-                      onClick={handleOpenRegister}
-                      className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1"
-                    >
-                      Mulai Gratis
-                    </button>
-                    <button
-                      onClick={handleOpenLogin}
-                      className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-                    >
-                      Masuk Akun
-                    </button>
-                  </>
-                )}
-              </div>
-
-              <div className="mt-10 flex items-center justify-center lg:justify-start gap-6 text-sm text-slate-500 font-medium">
-                <span className="flex items-center gap-2">
-                  <FiCheckSquare className="text-green-500" /> Setup Instan
-                </span>
-                <span className="flex items-center gap-2">
-                  <FiShield className="text-blue-500" /> Data Aman
-                </span>
-                <span className="flex items-center gap-2">
-                  <FiCpu className="text-purple-500" /> AI Powered
-                </span>
-              </div>
+                    Daftar Sekarang
+                  </button>
+                  <button onClick={handleOpenLogin} className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-transparent border-2 border-white/50 rounded-xl hover:bg-white/10 transition-all">
+                    Masuk Akun
+                  </button>
+                </>
+              )}
             </motion.div>
-
-            {/* Illustration / Visual */}
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="relative hidden lg:block">
-              <div className="relative z-10 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                {/* Placeholder Dashboard UI Mockup */}
-                <div className="bg-slate-50 rounded-xl overflow-hidden aspect-[4/3] flex flex-col relative">
-                  {/* Header Mockup */}
-                  <div className="h-12 bg-white border-b border-slate-200 flex items-center px-4 gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                  </div>
-                  {/* Content Mockup (Abstract) */}
-                  <div className="p-6 grid grid-cols-3 gap-4 flex-1">
-                    <div className="col-span-2 bg-white rounded-lg shadow-sm p-4 flex flex-col gap-3">
-                      <div className="w-1/3 h-4 bg-slate-200 rounded"></div>
-                      <div className="w-full h-32 bg-blue-50 rounded-lg relative overflow-hidden">
-                        <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-blue-200 to-transparent opacity-50"></div>
-                        <div className="absolute bottom-4 left-4 w-8 h-16 bg-blue-500 rounded-t"></div>
-                        <div className="absolute bottom-4 left-16 w-8 h-24 bg-indigo-500 rounded-t"></div>
-                        <div className="absolute bottom-4 left-28 w-8 h-10 bg-cyan-500 rounded-t"></div>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-lg shadow-sm p-4 flex flex-col gap-3">
-                      <div className="w-1/2 h-4 bg-slate-200 rounded"></div>
-                      <div className="flex-1 bg-rose-50 rounded-lg flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full border-4 border-rose-500 flex items-center justify-center text-rose-600 font-bold">75%</div>
-                      </div>
-                    </div>
-                    <div className="col-span-3 bg-white rounded-lg shadow-sm p-4 flex gap-4 items-center">
-                      <div className="w-10 h-10 rounded-full bg-emerald-100"></div>
-                      <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="w-2/3 h-full bg-emerald-500"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Cards Decoration */}
-              <div className="absolute -top-10 -right-10 bg-white p-4 rounded-xl shadow-xl border border-slate-100 animate-bounce-slow">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 text-green-600 rounded-lg">
-                    <FiCheckSquare />
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400 font-bold uppercase">Status</div>
-                    <div className="text-sm font-bold text-slate-800">Risk Compliant</div>
-                  </div>
-                </div>
-              </div>
-              <div className="absolute -bottom-5 -left-5 bg-white p-4 rounded-xl shadow-xl border border-slate-100 animate-bounce-slow animation-delay-2000">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                    <FiCpu />
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400 font-bold uppercase">AI Analysis</div>
-                    <div className="text-sm font-bold text-slate-800">Generating...</div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* --- FEATURES SECTION (CARDS) --- */}
-      <section className="py-24 bg-slate-50 relative">
+      {/* --- PROGRAMS SECTION (Grid Cards) --- */}
+      <section className="py-24 bg-white relative">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-blue-600 font-bold tracking-wide uppercase text-sm mb-3">Fitur Unggulan</h2>
-            <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900">Satu Platform, Solusi GRC Menyeluruh</h3>
-            <p className="mt-4 text-lg text-slate-600">Kami menyediakan alat yang Anda butuhkan untuk mengidentifikasi, menilai, dan memitigasi risiko dengan efisiensi tinggi.</p>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900">Program Sertifikasi Kami</h3>
+            <p className="mt-4 text-lg text-slate-500">Berbagai pilihan program sertifikasi profesional untuk mengembangkan kompetensi Anda.</p>
           </div>
 
-          <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature, index) => (
-              <motion.div key={feature.title} variants={itemVariants} className="group bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl border border-slate-100 hover:border-blue-100 transition-all duration-300 relative overflow-hidden">
-                {/* Hover Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white to-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                <div className="relative z-10">
-                  <div className={`w-14 h-14 rounded-xl ${feature.bg} flex items-center justify-center shadow-lg mb-6 transform group-hover:scale-110 transition-transform duration-300`}>{feature.icon}</div>
-                  <h4 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-700 transition-colors">{feature.title}</h4>
-                  <p className="text-slate-600 leading-relaxed text-sm">{feature.description}</p>
-                </div>
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {programs.map((program, index) => (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                whileHover={{ y: -10 }}
+                className="group bg-white rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] border border-slate-100 transition-all duration-300"
+              >
+                <div className={`w-14 h-14 rounded-2xl ${program.bg} ${program.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>{program.icon}</div>
+                <h4 className="text-xl font-bold text-slate-800 mb-3">{program.title}</h4>
+                <p className="text-slate-500 leading-relaxed text-sm">{program.description}</p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* --- USER ROLES SECTION --- */}
-      <section className="py-24 bg-white border-t border-slate-100">
-        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">Dirancang untuk Kolaborasi Tim</h2>
-              <p className="text-lg text-slate-600 mb-8">SIRICO bukan hanya untuk Manajer Risiko. Kami membangun platform yang menghubungkan seluruh lapisan organisasi dalam budaya sadar risiko.</p>
+      {/* --- WHY CHOOSE US SECTION --- */}
+      <section className="py-24 bg-slate-50">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-3xl mx-auto mb-16">
+            <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900">Mengapa Memilih LSP-Sertifikasiku?</h3>
+            <p className="mt-4 text-lg text-slate-500">Kami berkomitmen memberikan layanan sertifikasi terbaik untuk kesuksesan karier Anda.</p>
+          </div>
 
-              <div className="space-y-6">
-                {userRoles.map((role, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.2 }}
-                    className="flex gap-5 p-5 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100"
-                  >
-                    <div className="shrink-0">{role.icon}</div>
-                    <div>
-                      <h4 className="text-lg font-bold text-slate-900">{role.role}</h4>
-                      <p className="text-slate-600 text-sm mt-1">{role.needs}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Side: Abstract Visual */}
-            <div className="relative lg:h-[600px] bg-slate-100 rounded-3xl overflow-hidden flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-700 opacity-90"></div>
-              {/* Pattern */}
-              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
-
-              <div className="relative z-10 text-center p-10">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl shadow-2xl max-w-md mx-auto">
-                  <h3 className="text-2xl font-bold text-white mb-2">Enterprise Grade Security</h3>
-                  <p className="text-blue-100 mb-6">Data Anda dilindungi dengan standar keamanan tertinggi dan enkripsi modern.</p>
-                  <div className="flex justify-center gap-4">
-                    <div className="p-3 bg-white/20 rounded-lg">
-                      <FiLock className="text-white w-6 h-6" />
-                    </div>
-                    <div className="p-3 bg-white/20 rounded-lg">
-                      <FiShield className="text-white w-6 h-6" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature, idx) => (
+              <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="flex flex-col items-center">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-5 shadow-sm">{feature.icon}</div>
+                <h4 className="text-lg font-bold text-slate-800 mb-2">{feature.title}</h4>
+                <p className="text-slate-500 text-sm leading-relaxed px-4">{feature.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* --- CTA SECTION --- */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-blue-900">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-indigo-900"></div>
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      {/* --- STATS STRIP --- */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-cyan-500 text-white">
+        <div className="container mx-auto max-w-7xl px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/20">
+            {stats.map((stat, idx) => (
+              <div key={idx} className="p-4">
+                <div className="text-4xl lg:text-5xl font-extrabold mb-2">{stat.number}</div>
+                <div className="text-blue-100 font-medium">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="container mx-auto max-w-4xl px-4 relative z-10 text-center">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Siap Mengubah Cara Anda Mengelola Risiko?</h2>
-            <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">Bergabunglah dengan organisasi cerdas lainnya yang telah menggunakan SIRICO untuk masa depan yang lebih aman.</p>
+      {/* --- CTA SECTION (Blue Box Style) --- */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto max-w-5xl px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-r from-cyan-400 to-blue-500 rounded-3xl p-10 md:p-16 text-center shadow-2xl text-white relative overflow-hidden"
+          >
+            {/* Decor */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-900/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-3xl"></div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {user ? (
-                <Link
-                  to="/dashboard"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-900 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  Buka Dashboard
-                </Link>
-              ) : (
-                <button
-                  onClick={handleOpenRegister}
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-900 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  Daftar Sekarang - Gratis
-                </button>
-              )}
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 relative z-10">
+              Siap Meningkatkan Kompetensi <br /> Profesional Anda?
+            </h2>
+            <p className="text-lg text-blue-50 mb-10 max-w-2xl mx-auto relative z-10">Bergabunglah dengan ribuan profesional yang telah meningkatkan karier mereka bersama LSP-Sertifikasiku.</p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+              <button
+                onClick={() => window.open("https://wa.me/6281234567890", "_blank")}
+                className="inline-flex items-center justify-center px-8 py-3 bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-lg transition-all shadow-lg"
+              >
+                Konsultasi Gratis <FiArrowRight className="ml-2" />
+              </button>
+              <button onClick={handleOpenRegister} className="inline-flex items-center justify-center px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transition-all shadow-lg">
+                Lihat Jadwal
+              </button>
+            </div>
+
+            <div className="mt-8 flex justify-center gap-6 text-sm text-blue-100 font-medium relative z-10">
+              <span className="flex items-center gap-2">
+                <FiMail /> info@sertifikasiku.id
+              </span>
+              <span className="flex items-center gap-2">
+                <FiPhone /> +62 812-3456-7890
+              </span>
             </div>
           </motion.div>
         </div>

@@ -14,36 +14,7 @@ class DepartmentSchema(ma.Schema):
     institution = fields.Str(dump_only=True)
 class UserSimpleSchema(ma.Schema):
     nama_lengkap = fields.Str()
-class SubmittedRiskSchema(ma.Schema):
-    """Skema untuk menampilkan 'Ajuan Risiko' di tabel Manajer Risiko."""
-    id = fields.Int()
-    risk_description = fields.Str()
-    potential_cause = fields.Str()
-    potential_impact = fields.Str()
-    status = fields.Str()
-    created_at = fields.DateTime(format="%d %B %Y") # Format tanggal
     
-    # Tampilkan siapa yang mengirim dan dari departemen mana
-    submitter = fields.Nested(UserSimpleSchema)
-    department = fields.Nested(DepartmentSchema(only=("name",)))
-    
-class ActionPlanSchema(ma.Schema):
-    """Skema untuk Rencana Aksi (Mitigasi)."""
-    id = fields.Int()
-    action_description = fields.Str()
-    status = fields.Str()
-    # Format tanggal agar lebih mudah dibaca di frontend
-    due_date = fields.Date(format="%d %B %Y") 
-    institution = fields.Str()
-    created_at = fields.DateTime(format="%d %B %Y")
-    
-    # Tampilkan info relasi
-    assigned_department = fields.Nested(DepartmentSchema(only=("name",)))
-    creator = fields.Nested(UserSimpleSchema)
-    
-    # Tampilkan ID sumbernya
-    origin_answer_id = fields.Int(allow_none=True)
-    origin_submitted_risk_id = fields.Int(allow_none=True)
 
 admin_bp = Blueprint('admin_bp', __name__)
 

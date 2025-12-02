@@ -98,7 +98,7 @@ def seed_admin():
         new_admin = User(
             email=admin_email,
             password_hash=hashed_password,
-            nama_lengkap="Admin SIRICO",
+            nama_lengkap="Admin LSP Sertifikasiku",
         )
         
         new_admin.roles.append(admin_role)
@@ -310,22 +310,22 @@ def seed_default_risk_map():
     print("Starting risk map seeding process...")
     created_count = 0
 
-    # --- Data untuk Default SIRICO Matrix 5x5 ---
-    sirico_name = "Default SIRICO Matrix 5x5"
-    sirico_desc = "Template peta risiko standar berdasarkan matriks 5x5 umum (skor = P x I)."
-    sirico_levels = [
+    # --- Data untuk Default LSP Matrix 5x5 ---
+    lsp_name = "Default LSP Matrix 5x5"
+    lsp_desc = "Template peta risiko standar berdasarkan matriks 5x5 umum (skor = P x I)."
+    lsp_levels = [
         {"level_name": "Sangat Rendah", "color_hex": "#00B050", "min_score": 1, "max_score": 2}, # Hijau Tua
         {"level_name": "Rendah", "color_hex": "#92D050", "min_score": 3, "max_score": 6},       # Hijau Muda
         {"level_name": "Moderat", "color_hex": "#FFFF00", "min_score": 7, "max_score": 12},      # Kuning
         {"level_name": "Tinggi", "color_hex": "#FFC000", "min_score": 13, "max_score": 19},     # Oranye
         {"level_name": "Sangat Tinggi", "color_hex": "#FF0000", "min_score": 20, "max_score": 25} # Merah
     ]
-    sirico_scores = {}
+    lsp_scores = {}
     for l in range(1, 6):
         for i in range(1, 6):
-            sirico_scores[(l, i)] = l * i
+            lsp_scores[(l, i)] = l * i
 
-    if _create_default_template(sirico_name, sirico_desc, sirico_levels, sirico_scores):
+    if _create_default_template(lsp_name, lsp_desc, lsp_levels, lsp_scores):
         created_count += 1
 
     # --- Data untuk Default BUMN ---

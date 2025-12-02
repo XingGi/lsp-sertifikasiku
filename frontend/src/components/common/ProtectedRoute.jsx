@@ -6,7 +6,7 @@ const ProtectedRoute = ({ requiredPermission }) => {
   const { user } = useAuth(); // Dapatkan user dari context
   const location = useLocation(); // Dapatkan lokasi saat ini
   // Cek apakah token ada di localStorage
-  const token = localStorage.getItem("sirico-token");
+  const token = localStorage.getItem("lsp-token");
 
   if (!token) {
     return <Navigate to="/" state={{ from: location }} replace />; // Simpan lokasi asal

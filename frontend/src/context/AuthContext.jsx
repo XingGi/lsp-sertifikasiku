@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const token = localStorage.getItem("sirico-token");
+    const token = localStorage.getItem("lsp-token");
     if (token) {
       try {
         return jwtDecode(token);
@@ -17,12 +17,12 @@ export const AuthProvider = ({ children }) => {
   });
 
   const login = (token) => {
-    localStorage.setItem("sirico-token", token);
+    localStorage.setItem("lsp-token", token);
     setUser(jwtDecode(token));
   };
 
   const logout = () => {
-    localStorage.removeItem("sirico-token");
+    localStorage.removeItem("lsp-token");
     setUser(null);
   };
 

@@ -1685,52 +1685,6 @@ def parse_int_or_none(value):
     except (ValueError, TypeError):
         return None
 
-# Helper function to calculate scores and net values
-# def calculate_risk_values(data, template_id):
-#     inherent_p = parse_int_or_none(data.get('inherent_probabilitas'))
-#     inherent_i = parse_int_or_none(data.get('inherent_dampak'))
-#     inherent_prob_kualitatif = parse_float_or_none(data.get('inherent_prob_kualitatif'))
-#     inherent_dampak_finansial = parse_float_or_none(data.get('inherent_dampak_finansial'))
-
-#     residual_p = parse_int_or_none(data.get('residual_probabilitas'))
-#     residual_i = parse_int_or_none(data.get('residual_dampak'))
-#     residual_prob_kualitatif = parse_float_or_none(data.get('residual_prob_kualitatif'))
-#     residual_dampak_finansial = parse_float_or_none(data.get('residual_dampak_finansial'))
-    
-#     calculated = {
-#         'inherent_skor': None,
-#         'inherent_nilai_bersih': None,
-#         'residual_skor': None,
-#         'residual_nilai_bersih': None
-#     }
-    
-#     def get_score_from_template(p, i):
-#         if p is not None and i is not None and template_id is not None:
-#             score_entry = RiskMapScore.query.filter_by(
-#                 template_id=template_id,
-#                 likelihood_level=p,
-#                 impact_level=i
-#             ).first()
-#             return score_entry.score if score_entry else None
-#         elif p is not None and i is not None:
-#              print(f"PERINGATAN: Tidak ada template_id ({template_id}) atau skor tidak ditemukan untuk P={p}, I={i}. Menggunakan P*I.")
-#              return p * i
-#         return None
-
-#     calculated['inherent_skor'] = get_score_from_template(inherent_p, inherent_i)
-    
-#     if inherent_prob_kualitatif is not None and inherent_dampak_finansial is not None:
-#         calculated['inherent_nilai_bersih'] = inherent_dampak_finansial * (inherent_prob_kualitatif / 100.0)
-
-#     calculated['residual_skor'] = get_score_from_template(residual_p, residual_i)
-
-#     if residual_prob_kualitatif is not None and residual_dampak_finansial is not None:
-#         dampak_fin_res = residual_dampak_finansial if residual_dampak_finansial is not None else inherent_dampak_finansial
-#         if dampak_fin_res is not None:
-#              calculated['residual_nilai_bersih'] = dampak_fin_res * (residual_prob_kualitatif / 100.0)
-
-#     return calculated
-
 def calculate_scores_from_template(data, template_id):
     inherent_p = parse_int_or_none(data.get('inherent_probabilitas'))
     inherent_i = parse_int_or_none(data.get('inherent_dampak'))

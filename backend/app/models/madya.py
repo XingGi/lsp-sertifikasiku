@@ -1,6 +1,7 @@
 # backend/app/models/madya.py
 from app import db
 from datetime import datetime
+from sqlalchemy import Numeric
 
 # --- Template Peta Risiko ---
 class RiskMapTemplate(db.Model):
@@ -159,9 +160,11 @@ class RiskInputMadya(db.Model):
     inherent_probabilitas = db.Column(db.Integer)
     inherent_dampak = db.Column(db.Integer)
     inherent_skor = db.Column(db.Integer, nullable=True)
-    inherent_prob_kualitatif = db.Column(db.Float, nullable=True)
-    inherent_dampak_finansial = db.Column(db.Float, nullable=True)
-    inherent_nilai_bersih = db.Column(db.Float, nullable=True)
+    
+    inherent_prob_kualitatif = db.Column(db.Numeric(5, 2), nullable=True)
+    
+    inherent_dampak_finansial = db.Column(db.Numeric(20, 2), nullable=True) 
+    inherent_nilai_bersih = db.Column(db.Numeric(20, 2), nullable=True)
 
     pemilik_risiko = db.Column(db.String(150), nullable=True)
     jabatan_pemilik = db.Column(db.String(150), nullable=True)
@@ -170,7 +173,9 @@ class RiskInputMadya(db.Model):
 
     strategi = db.Column(db.String(100), nullable=True)
     rencana_penanganan = db.Column(db.Text, nullable=True)
-    biaya_penanganan = db.Column(db.Float, nullable=True)
+    
+    biaya_penanganan = db.Column(db.Numeric(20, 2), nullable=True)
+    
     penanganan_dilakukan = db.Column(db.Text, nullable=True)
     status_penanganan = db.Column(db.String(50), nullable=True)
     jadwal_mulai_penanganan = db.Column(db.Date, nullable=True)
@@ -180,9 +185,12 @@ class RiskInputMadya(db.Model):
     residual_probabilitas = db.Column(db.Integer, nullable=True)
     residual_dampak = db.Column(db.Integer, nullable=True)
     residual_skor = db.Column(db.Integer, nullable=True)
-    residual_prob_kualitatif = db.Column(db.Float, nullable=True)
-    residual_dampak_finansial = db.Column(db.Float, nullable=True)
-    residual_nilai_bersih = db.Column(db.Float, nullable=True)
+    
+    residual_prob_kualitatif = db.Column(db.Numeric(5, 2), nullable=True)
+    
+    residual_dampak_finansial = db.Column(db.Numeric(20, 2), nullable=True)
+    residual_nilai_bersih = db.Column(db.Numeric(20, 2), nullable=True)
+    
     tanggal_review = db.Column(db.Date, nullable=True)
 
     assessment = db.relationship('MadyaAssessment', back_populates='risk_inputs')

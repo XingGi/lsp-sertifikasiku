@@ -88,7 +88,7 @@ function AuthModal({ isOpen, onClose, initialView = "login" }) {
                 <div className="mx-auto w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-2">
                   <FiLogIn className="w-6 h-6 text-blue-600" />
                 </div>
-                <Title className="text-slate-800">Selamat Datang di SIRICO</Title>
+                <Title className="text-slate-800">Selamat Datang di LSP Sertifikasiku</Title>
                 <Text>{view === "login" ? "Login untuk melanjutkan" : "Buat akun baru Anda"}</Text>
               </div>
 

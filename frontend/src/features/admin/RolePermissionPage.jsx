@@ -1,7 +1,7 @@
 // frontend/src/features/admin/RolePermissionPage.jsx
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Card, Title, Text, Button, Dialog, DialogPanel, TextInput, Textarea, MultiSelect, MultiSelectItem, Badge, Accordion, AccordionHeader, AccordionBody, Select, SelectItem } from "@tremor/react";
+import { Card, Title, Text, Button, Dialog, DialogPanel, TextInput, Badge, Select, SelectItem } from "@tremor/react";
 import apiClient from "../../api/api";
 import { FiPlus, FiEdit2, FiTrash2, FiKey, FiShield, FiX, FiSearch, FiFilter, FiCheck } from "react-icons/fi";
 import { toast } from "sonner";
@@ -12,13 +12,7 @@ import ConfirmationDialog from "../../components/common/ConfirmationDialog";
 const groupPermissions = (permissions) => {
   const groups = {
     Dashboard: [],
-    "Risk Management AI": [],
     "Risk Management Levels": [],
-    "Quick Risk Scan (QRC)": [],
-    "Modul RSCA": [],
-    "Modul BPR": [],
-    "Modul BIA": [],
-    "Modul Horizon": [],
     "Admin Area": [],
     Lainnya: [],
   };
@@ -26,22 +20,9 @@ const groupPermissions = (permissions) => {
   const categoryMap = {
     dashboard: "Dashboard",
 
-    risk_assessment_ai: "Risk Management AI",
-    risk_register_main: "Risk Management AI",
-
     risk_dasar: "Risk Management Levels",
     risk_madya: "Risk Management Levels",
     risk_templates: "Risk Management Levels",
-
-    qrc: "Quick Risk Scan (QRC)",
-
-    rsca: "Modul RSCA",
-    bpr: "Modul BPR",
-    bia: "Modul BIA",
-    critical_assets: "Modul BIA",
-    horizon: "Modul Horizon",
-    cba: "Lainnya",
-    monte_carlo: "Lainnya",
 
     admin_area: "Admin Area",
     users: "Admin Area",
@@ -49,8 +30,6 @@ const groupPermissions = (permissions) => {
     master_data: "Admin Area",
     regulations: "Admin Area",
     departments: "Admin Area",
-    rsca_cycles: "Admin Area",
-    mitigation_monitor: "Modul RSCA",
   };
 
   permissions.forEach((perm) => {
