@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ======================================================= */
+
+/* === KODE FINAL UNTUK SEMUA PERBAIKAN TAMPILAN TREMOR === */
+
+/* ======================================================= */
+
+/* 1. Perbaikan Dropdown Tembus Pandang */
+
+[class*="shadow-tremor-dropdown"] {
+  background-color: white !important;
+  z-index: 9999 !important;
+}
+
+/* 2. Perbaikan Sudut Input Menjadi Rounded */
+
+/* .tremor-Select-input,
+.tremor-SearchSelect-input,
+.tremor-TextInput-input {
+  border-radius: 0.75rem !important;
+} */
+
+[class*="tremor-Card-root"] {
+  border-radius: 0.75rem !important;
+}
+
+[id*="headlessui-listbox-button-:rt:"] {
+  border-radius: 0.75rem !important;
+}
+
+[class*="tremor-Textarea-Textarea"] {
+  border-radius: 0.75rem !important;
+}
+
+[class*="text-tremor-default"] {
+  border-radius: 0.75rem !important;
+}
+
+[class*="tremor-TextInput-root"] {
+  border-radius: 0.75rem !important;
+}
+
+[class*="tremor-dialog-panel"] {
+  background-color: white !important;
+  z-index: 9999 !important;
+  border-radius: 0.75rem !important;
+}
+
+/* 3. Perbaikan Modal/Dialog Tembus Pandang */
+
+.tremor-Dialog-root {
+  z-index: 9999 !important;
+}
+
+/* 4. PERBAIKAN BARU: Untuk mode fullscreen */
+
+/* Targetkan kelas .fullscreen-card HANYA saat dalam mode :fullscreen */
+
+.fullscreen-card:fullscreen {
+  background-color: white !important;
+  /* Gunakan overflow: auto agar scroll muncul jika dibutuhkan */
+  overflow: auto !important;
+  padding: 1.5rem;
+}
+
+/* Pastikan teks di dalam fullscreen tetap terlihat */
+
+.fullscreen-card:fullscreen .tremor-Title,
+.fullscreen-card:fullscreen .tremor-Text {
+  color: #374151 !important;
+  /* Warna gray-700 */
+}
+
+.view-fullscreen-content:fullscreen {
+  background-color: white !important;
+  padding: 1.5rem;
+  /* 24px */
+  overflow-y: auto;
+  /* Pastikan tetap bisa di-scroll */
+}
