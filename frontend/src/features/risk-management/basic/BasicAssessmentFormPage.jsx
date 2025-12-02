@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Card, Title, Text, Button, TextInput, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell, Dialog, DialogPanel, Flex, Badge, Icon } from "@tremor/react";
-import { FiBriefcase, FiHome, FiSave, FiPlus, FiTrash2, FiEdit2, FiHelpCircle, FiMaximize, FiMinimize, FiAlertTriangle, FiArrowLeft, FiCheckCircle, FiLayers, FiList, FiBarChart2, FiLoader } from "react-icons/fi";
+import { Card, Title, Text, Button, TextInput, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell, Dialog, DialogPanel, Flex, Badge } from "@tremor/react";
+import { FiBriefcase, FiHome, FiSave, FiPlus, FiTrash2, FiEdit2, FiHelpCircle, FiMaximize, FiMinimize, FiAlertTriangle, FiArrowLeft, FiLayers, FiList, FiBarChart2, FiLoader } from "react-icons/fi";
 import apiClient from "../../../api/api";
 import { toast } from "sonner";
 import { formatDate } from "../../../utils/formatters";
@@ -12,6 +12,7 @@ import { formatDate } from "../../../utils/formatters";
 import BasicContextModal from "./components/BasicContextModal";
 import BasicRiskModal from "./components/BasicRiskModal";
 import BasicAnalysisModal from "./components/BasicAnalysisModal";
+import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 
 // --- Helper Functions ---
 const formatCurrency = (value) => {
@@ -32,29 +33,6 @@ const Tooltip = ({ children }) => (
       </ul>
     </div>
   </div>
-);
-
-// Komponen Konfirmasi Hapus
-const ConfirmationDialog = ({ isOpen, onClose, onConfirm, title, message }) => (
-  <Dialog open={isOpen} onClose={onClose} static={true}>
-    <DialogPanel className="max-w-sm">
-      <div className="text-center p-4">
-        <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-          <FiAlertTriangle className="h-6 w-6 text-red-600" />
-        </div>
-        <Title className="text-xl">{title}</Title>
-        <Text className="mt-2 text-gray-600">{message}</Text>
-      </div>
-      <div className="mt-6 flex justify-center gap-3">
-        <Button className="rounded-md" variant="secondary" onClick={onClose}>
-          Batal
-        </Button>
-        <Button className="rounded-md" color="red" onClick={onConfirm}>
-          Ya, Hapus
-        </Button>
-      </div>
-    </DialogPanel>
-  </Dialog>
 );
 
 function BasicAssessmentFormPage() {
@@ -79,7 +57,12 @@ function BasicAssessmentFormPage() {
   const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
   const [editingAnalysisIndex, setEditingAnalysisIndex] = useState(null);
 
-  const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, title: "", message: "", onConfirm: null });
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   // Fullscreen logic
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -129,14 +112,16 @@ function BasicAssessmentFormPage() {
     }
     setIsContextModalOpen(false);
   };
+
   const handleDeleteContext = (index) => {
-    setDeleteConfirmation({
+    setDeleteDialog({
       isOpen: true,
       title: "Hapus Konteks",
-      message: "Yakin ingin menghapus item konteks ini?",
+      message: "Apakah Anda yakin ingin menghapus item konteks ini? Tindakan ini tidak dapat dibatalkan.",
       onConfirm: () => {
         setContexts(contexts.filter((_, i) => i !== index));
-        setDeleteConfirmation({ isOpen: false });
+        setDeleteDialog((prev) => ({ ...prev, isOpen: false }));
+        toast.success("Konteks berhasil dihapus.");
       },
     });
   };
@@ -159,14 +144,38 @@ function BasicAssessmentFormPage() {
     }
     setIsRiskModalOpen(false);
   };
-  const handleDeleteRisk = (index) => {
-    setDeleteConfirmation({
+
+  const handleDeleteRisk = (indexToDelete) => {
+    setDeleteDialog({
       isOpen: true,
       title: "Hapus Risiko",
-      message: "Yakin ingin menghapus risiko ini?",
+      // Pesan diperjelas agar user tahu dampaknya
+      message: "Menghapus risiko ini akan secara otomatis MENGHAPUS SEMUA DATA ANALISIS yang terkait dengannya. Apakah Anda yakin ingin melanjutkan?",
       onConfirm: () => {
-        setRisks(risks.filter((_, i) => i !== index));
-        setDeleteConfirmation({ isOpen: false });
+        // 1. Hapus Risiko dari Array Risks
+        const newRisks = risks.filter((_, i) => i !== indexToDelete);
+
+        // 2. Proses Array Analyses (Hapus yang terkait & Geser Index sisanya)
+        const newAnalyses = analyses
+          // Langkah A: Buang analisis yang parent-nya (risikonya) kita hapus
+          .filter((analysis) => analysis.risk_identification_id !== indexToDelete)
+          // Langkah B: Perbaiki index untuk analisis sisanya
+          .map((analysis) => {
+            // Jika analisis ini merujuk ke risiko yang posisinya DI BAWAH risiko yang dihapus...
+            if (analysis.risk_identification_id > indexToDelete) {
+              // ...maka ID-nya harus mundur 1 langkah (karena array risiko geser ke atas)
+              return { ...analysis, risk_identification_id: analysis.risk_identification_id - 1 };
+            }
+            // Jika posisinya di atas (sebelum) yang dihapus, aman, tidak perlu ubah
+            return analysis;
+          });
+
+        // 3. Update State Sekaligus
+        setRisks(newRisks);
+        setAnalyses(newAnalyses);
+
+        setDeleteDialog((prev) => ({ ...prev, isOpen: false }));
+        toast.success("Risiko dan analisis terkait berhasil dihapus.");
       },
     });
   };
@@ -196,14 +205,16 @@ function BasicAssessmentFormPage() {
     }
     setIsAnalysisModalOpen(false);
   };
+
   const handleDeleteAnalysis = (index) => {
-    setDeleteConfirmation({
+    setDeleteDialog({
       isOpen: true,
       title: "Hapus Analisis",
-      message: "Yakin ingin menghapus analisis ini?",
+      message: "Apakah Anda yakin ingin menghapus data analisis ini?",
       onConfirm: () => {
         setAnalyses(analyses.filter((_, i) => i !== index));
-        setDeleteConfirmation({ isOpen: false });
+        setDeleteDialog((prev) => ({ ...prev, isOpen: false }));
+        toast.success("Analisis berhasil dihapus.");
       },
     });
   };
@@ -523,13 +534,7 @@ function BasicAssessmentFormPage() {
         initialData={editingAnalysisIndex !== null ? analyses[editingAnalysisIndex] : null}
         availableRisks={availableRisksForAnalysis}
       />
-      <ConfirmationDialog
-        isOpen={deleteConfirmation.isOpen}
-        onClose={() => setDeleteConfirmation({ ...deleteConfirmation, isOpen: false })}
-        onConfirm={deleteConfirmation.onConfirm}
-        title={deleteConfirmation.title}
-        message={deleteConfirmation.message}
-      />
+      <ConfirmationDialog isOpen={deleteDialog.isOpen} onClose={() => setDeleteDialog({ ...deleteDialog, isOpen: false })} onConfirm={deleteDialog.onConfirm} title={deleteDialog.title} message={deleteDialog.message} />
     </div>
   );
 }

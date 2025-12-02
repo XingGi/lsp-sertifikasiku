@@ -224,8 +224,6 @@ def get_user_details_admin(user_id):
         "role_ids": [role.id for role in user.roles], # Kirim ID roles
         "assessment_limits": assessment_limits,
         "department_id": user.department_id,
-        "limit_qrc_standard": user.limit_qrc_standard,
-        "limit_qrc_essay": user.limit_qrc_essay,
     }), 200
 
 # === ENDPOINT BARU: UPDATE User Detail (oleh Admin) ===
@@ -272,7 +270,6 @@ def update_user_details_admin(user_id):
             "madya": "limit_madya",
             "ai": "limit_ai",
             "template_peta": "limit_template_peta",
-            "horizon": "limit_horizon"
         }
         for key, db_field in limit_fields.items():
             if key in limits_data and 'limit' in limits_data[key]:
@@ -284,27 +281,6 @@ def update_user_details_admin(user_id):
                 except (ValueError, TypeError):
                     pass # Abaikan jika limit tidak valid
                 
-    if 'limit_qrc_standard' in data:
-        try:
-            val = data['limit_qrc_standard']
-            new_limit = int(val) if val is not None else None
-            
-            if user.limit_qrc_standard != new_limit:
-                user.limit_qrc_standard = new_limit
-                updated = True
-        except (ValueError, TypeError):
-            pass # Abaikan jika input tidak valid
-
-    if 'limit_qrc_essay' in data:
-        try:
-            val = data['limit_qrc_essay']
-            new_limit = int(val) if val is not None else None
-            
-            if user.limit_qrc_essay != new_limit:
-                user.limit_qrc_essay = new_limit
-                updated = True
-        except (ValueError, TypeError):
-            pass
     
     if 'department_id' in data:
         dept_id = data.get('department_id')

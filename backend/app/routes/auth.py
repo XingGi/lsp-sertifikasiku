@@ -185,8 +185,6 @@ def get_account_details():
         "assessment_limits": assessment_limits,
         "department_id": user.department_id,
         "department_name": user.department.name if user.department else None,
-        "limit_qrc_standard": user.limit_qrc_standard,
-        "limit_qrc_essay": user.limit_qrc_essay,
     }), 200
 
 # === ENDPOINT BARU UNTUK UPDATE AKUN ===

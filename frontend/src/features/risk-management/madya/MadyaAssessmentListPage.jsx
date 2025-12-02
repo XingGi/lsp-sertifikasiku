@@ -26,7 +26,7 @@ const ConfirmationDialog = ({ isOpen, onClose, onConfirm, title, message, isLoad
         <Button className="rounded-md" variant="secondary" onClick={onClose} disabled={isLoading}>
           Batal
         </Button>
-        <Button className="rounded-md" color="red" onClick={onConfirm} loading={isLoading} disabled={isLoading}>
+        <Button className="rounded-md" color="rose" onClick={onConfirm} loading={isLoading} disabled={isLoading}>
           Ya, Hapus
         </Button>
       </div>

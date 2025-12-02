@@ -21,8 +21,8 @@ function NotificationModal({ isOpen, onClose, title, message }) {
         </div>
 
         {/* Tombol Aksi */}
-        <div className="p-4 bg-slate-50 border-t flex justify-center">
-          <Button onClick={onClose} className="w-full sm:w-auto">
+        <div className="p-4 border-t flex justify-center">
+          <Button onClick={onClose} className="text-white rounded-md w-full sm:w-auto" color="blue">
             Mengerti
           </Button>
         </div>

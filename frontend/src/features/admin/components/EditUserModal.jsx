@@ -65,14 +65,11 @@ function EditUserModal({ isOpen, onClose, userId, allRoles = [], onSaveSuccess }
         .then((res) => {
           const fetchedUser = res.data;
           const limits = fetchedUser.assessment_limits || {};
-          ["dasar", "madya", "ai", "template_peta", "horizon"].forEach((key) => {
+          ["dasar", "madya", "template_peta"].forEach((key) => {
             if (!limits[key]) limits[key] = { count: 0, limit: null };
           });
 
-          const qrcStd = fetchedUser.limit_qrc_standard !== undefined ? fetchedUser.limit_qrc_standard : 2;
-          const qrcEssay = fetchedUser.limit_qrc_essay !== undefined ? fetchedUser.limit_qrc_essay : 1;
-
-          setUserData({ ...fetchedUser, assessment_limits: limits, limit_qrc_standard: qrcStd, limit_qrc_essay: qrcEssay, department_id: fetchedUser.department_id?.toString() || "" });
+          setUserData({ ...fetchedUser, assessment_limits: limits, department_id: fetchedUser.department_id?.toString() || "" });
           setSelectedRoleIds(fetchedUser.role_ids?.map(String) || []);
         })
         .catch(() => toast.error("Gagal memuat data user."))
@@ -115,8 +112,6 @@ function EditUserModal({ isOpen, onClose, userId, allRoles = [], onSaveSuccess }
       ...userData,
       role_ids: selectedRoleIds.map(Number),
       department_id: userData.department_id ? Number(userData.department_id) : null,
-      limit_qrc_standard: userData.limit_qrc_standard,
-      limit_qrc_essay: userData.limit_qrc_essay,
     };
     try {
       const res = await apiClient.put(`/admin/users/${userId}`, payload);
@@ -217,7 +212,7 @@ function EditUserModal({ isOpen, onClose, userId, allRoles = [], onSaveSuccess }
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {["dasar", "madya", "ai", "horizon", "template_peta"].map((key) => (
+                      {["dasar", "madya", "template_peta"].map((key) => (
                         <TableRow key={key} className="hover:bg-gray-50 transition-colors">
                           <TableCell className="p-2 text-xs font-medium capitalize text-slate-700">{key.replace("_", " ")}</TableCell>
                           <TableCell className="p-2 text-xs text-right text-slate-500">{userData.assessment_limits[key]?.count || 0}</TableCell>
@@ -226,20 +221,6 @@ function EditUserModal({ isOpen, onClose, userId, allRoles = [], onSaveSuccess }
                           </TableCell>
                         </TableRow>
                       ))}
-                      <TableRow className="hover:bg-gray-50 transition-colors border-t border-gray-100">
-                        <TableCell className="p-2 text-xs font-bold text-indigo-700">QRC Standard</TableCell>
-                        <TableCell className="p-2 text-xs text-right text-slate-500 font-medium">{userData.usage_qrc_standard || 0}</TableCell>
-                        <TableCell className="p-2 text-right">
-                          <NumberInput className="max-w-[70px]" value={userData.limit_qrc_standard} onValueChange={(v) => handleQrcLimitChange("limit_qrc_standard", v)} min={0} />
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="hover:bg-gray-50 transition-colors">
-                        <TableCell className="p-2 text-xs font-bold text-indigo-700">QRC Essay</TableCell>
-                        <TableCell className="p-2 text-xs text-right text-slate-500 font-medium">{userData.usage_qrc_essay || 0}</TableCell>
-                        <TableCell className="p-2 text-right">
-                          <NumberInput className="max-w-[70px]" value={userData.limit_qrc_essay} onValueChange={(v) => handleQrcLimitChange("limit_qrc_essay", v)} min={0} />
-                        </TableCell>
-                      </TableRow>
                     </TableBody>
                   </Table>
                 </div>
