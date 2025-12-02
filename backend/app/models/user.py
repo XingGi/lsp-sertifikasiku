@@ -64,10 +64,6 @@ class User(db.Model):
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
     department = db.relationship('Department', back_populates='users')
     
-    # String references untuk relasi agar tidak perlu import file lain di sini (mencegah circular import)
-    critical_assets = db.relationship('CriticalAsset', backref='owner', lazy=True, cascade="all, delete-orphan")
-    impact_scenarios = db.relationship('ImpactScenario', backref='owner', lazy=True, cascade="all, delete-orphan")
-    
     organizational_contexts = db.relationship('OrganizationalContext', backref='owner', lazy=True, cascade="all, delete-orphan")
     basic_assessments = db.relationship('BasicAssessment', backref='owner', lazy=True, cascade="all, delete-orphan")
     risk_map_templates = db.relationship('RiskMapTemplate', backref='owner', lazy=True, cascade="all, delete-orphan")

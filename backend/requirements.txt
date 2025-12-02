@@ -7,12 +7,8 @@ flask-cors
 flask-marshmallow
 marshmallow-sqlalchemy
 python-dotenv
-google-generativeai
 pymysql
 cryptography
-feedparser
-beautifulsoup4
-lxml
 requests
 deep-translator
 openpyxl
