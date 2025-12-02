@@ -1,7 +1,7 @@
 // frontend/src/features/dashboard/components/QuickActionsWidget.jsx
 import React from "react";
 import { Card, Title, Text } from "@tremor/react";
-import { FiBriefcase, FiShield, FiSearch, FiZap, FiLock, FiUnlock } from "react-icons/fi";
+import { FiBriefcase, FiShield, FiZap, FiLock } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 const ActionButton = ({ icon: Icon, title, desc, color, onClick, disabled }) => {
@@ -64,7 +64,6 @@ function QuickActionsWidget({ canBasic, canMadya, canHorizon }) {
       <div className="flex flex-col gap-2">
         <ActionButton icon={FiBriefcase} title="Asesmen Dasar" desc="Unit kerja & operasional" color="blue" onClick={() => navigate("/risk-management/dasar/new")} disabled={!canBasic} />
         <ActionButton icon={FiShield} title="Asesmen Madya" desc="Proyek & strategis" color="orange" onClick={() => navigate("/risk-management/madya")} disabled={!canMadya} />
-        <ActionButton icon={FiSearch} title="Horizon Scanning" desc="Analisis tren masa depan" color="indigo" onClick={() => navigate("/addons/horizon-scanner")} disabled={!canHorizon} />
       </div>
     </Card>
   );

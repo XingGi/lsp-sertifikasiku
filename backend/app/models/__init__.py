@@ -4,8 +4,7 @@
 from .user import User, Role, Permission, Department, user_roles, role_permissions
 
 from .master import (
-    MasterData, Regulation, 
-    CriticalAsset, Dependency, ImpactScenario
+    MasterData, Regulation
 )
 from .basic import (
     BasicAssessment, BasicRiskIdentification, BasicRiskAnalysis, 

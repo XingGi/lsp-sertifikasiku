@@ -89,9 +89,7 @@ function AccountSettingPage() {
     };
 
     if (user?.role === "admin") {
-      const { qrc_standard, qrc_essay, ...jsonLimits } = userData.assessment_limits;
-
-      payload.assessment_limits = jsonLimits;
+      payload.assessment_limits = userData.assessment_limits;
     }
 
     try {
