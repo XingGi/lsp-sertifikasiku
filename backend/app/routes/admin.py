@@ -1,6 +1,6 @@
 # backend/app/routes/admin.py
 from flask import request, jsonify, Blueprint
-from app.models import db, Role, Permission, User, BasicAssessment, MadyaAssessment, RiskAssessment, Department, RscaCycle, RscaQuestionnaire, RscaAnswer, RiskMapTemplate, SubmittedRisk, ActionPlan, HorizonScanResult, QrcAssessment, MasterData
+from app.models import db, Role, Permission, User, BasicAssessment, MadyaAssessment, Department, RiskMapTemplate, MasterData
 from app import bcrypt, ma
 from marshmallow import fields
 from .auth import admin_required, permission_required
@@ -12,30 +12,6 @@ class DepartmentSchema(ma.Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     institution = fields.Str(dump_only=True)
-
-class RscaCycleSchema(ma.Schema):
-    id = fields.Int(dump_only=True)
-    nama_siklus = fields.Str()
-    tanggal_mulai = fields.Date()
-    tanggal_selesai = fields.Date()
-    status = fields.Str()
-    institution = fields.Str(dump_only=True)
-    departments = fields.Nested(DepartmentSchema, many=True)
-
-class RscaQuestionnaireSchema(ma.Schema):
-    id = fields.Int(dump_only=True)
-    pertanyaan = fields.Str()
-    kategori = fields.Str()
-    question_type = fields.Str()
-    cycle_id = fields.Int()
-    
-class RscaAnswerSchema(ma.Schema):
-    id = fields.Int()
-    jawaban = fields.Str()
-    catatan = fields.Str()
-    control_effectiveness_rating = fields.Str()
-    questionnaire = fields.Nested(RscaQuestionnaireSchema)
-    department = fields.Nested(DepartmentSchema)
 class UserSimpleSchema(ma.Schema):
     nama_lengkap = fields.Str()
 class SubmittedRiskSchema(ma.Schema):
@@ -231,18 +207,12 @@ def get_user_details_admin(user_id):
 
     count_dasar = db.session.query(func.count(BasicAssessment.id)).filter_by(user_id=user_id).scalar() or 0
     count_madya = db.session.query(func.count(MadyaAssessment.id)).filter_by(user_id=user_id).scalar() or 0
-    count_ai = db.session.query(func.count(RiskAssessment.id)).filter_by(user_id=user_id).scalar() or 0
     count_template_peta = db.session.query(func.count(RiskMapTemplate.id)).filter_by(user_id=user_id, is_default=False).scalar() or 0
-    count_horizon = db.session.query(func.count(HorizonScanResult.id)).filter_by(user_id=user_id).scalar() or 0
-    count_qrc_standard = db.session.query(func.count(QrcAssessment.id)).filter_by(user_id=user_id, assessment_type='standard').scalar() or 0
-    count_qrc_essay = db.session.query(func.count(QrcAssessment.id)).filter_by(user_id=user_id, assessment_type='essay').scalar() or 0
 
     assessment_limits = {
         "dasar": {"count": count_dasar, "limit": user.limit_dasar},
         "madya": {"count": count_madya, "limit": user.limit_madya},
-        "ai": {"count": count_ai, "limit": user.limit_ai},
         "template_peta": {"count": count_template_peta, "limit": user.limit_template_peta},
-        "horizon": {"count": count_horizon, "limit": user.limit_horizon}
     }
 
     return jsonify({
@@ -256,8 +226,6 @@ def get_user_details_admin(user_id):
         "department_id": user.department_id,
         "limit_qrc_standard": user.limit_qrc_standard,
         "limit_qrc_essay": user.limit_qrc_essay,
-        "usage_qrc_standard": count_qrc_standard,
-        "usage_qrc_essay": count_qrc_essay
     }), 200
 
 # === ENDPOINT BARU: UPDATE User Detail (oleh Admin) ===
@@ -357,7 +325,6 @@ def update_user_details_admin(user_id):
             db.session.commit()
             count_dasar = db.session.query(func.count(BasicAssessment.id)).filter_by(user_id=user_id).scalar() or 0
             count_madya = db.session.query(func.count(MadyaAssessment.id)).filter_by(user_id=user_id).scalar() or 0
-            count_ai = db.session.query(func.count(RiskAssessment.id)).filter_by(user_id=user_id).scalar() or 0
             count_template_peta = db.session.query(func.count(RiskMapTemplate.id)).filter_by(user_id=user_id, is_default=False).scalar() or 0
             updated_user_data = {
                 "id": user.id, "nama_lengkap": user.nama_lengkap, "email": user.email,
@@ -366,12 +333,9 @@ def update_user_details_admin(user_id):
                 "department_id": user.department_id,
                 "role_ids": [role.id for role in user.roles],
                 "roles": [role.name for role in user.roles],
-                "limit_qrc_standard": user.limit_qrc_standard,
-                "limit_qrc_essay": user.limit_qrc_essay,
                 "assessment_limits": {
                     "dasar": {"count": count_dasar, "limit": user.limit_dasar},
                     "madya": {"count": count_madya, "limit": user.limit_madya},
-                    "ai": {"count": count_ai, "limit": user.limit_ai},
                     "template_peta": {"count": count_template_peta, "limit": user.limit_template_peta}
                 }
             }
@@ -415,7 +379,6 @@ def create_user_admin():
         # Set default limits (atau ambil dari request jika ada)
         limit_dasar=data.get('limit_dasar', 10),
         limit_madya=data.get('limit_madya', 5),
-        limit_ai=data.get('limit_ai', 15),
         limit_template_peta=data.get('limit_template_peta', 5)
     )
     
@@ -442,7 +405,6 @@ def create_user_admin():
             "assessment_limits": {
                 "dasar": {"count": 0, "limit": new_user.limit_dasar},
                 "madya": {"count": 0, "limit": new_user.limit_madya},
-                "ai": {"count": 0, "limit": new_user.limit_ai},
                 "template_peta": {"count": 0, "limit": new_user.limit_template_peta}
             }
         }
@@ -598,342 +560,6 @@ def delete_department_for_institution(dept_id):
     db.session.commit()
     
     return jsonify({"msg": "Departemen berhasil dihapus."}), 200
-    
-@admin_bp.route('/rsca-cycles', methods=['GET'])
-@jwt_required()
-@permission_required('manage_rsca_cycles')
-def get_rsca_cycles():
-    """Mengambil semua siklus RSCA untuk admin."""
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    if not user or not user.institution:
-        return jsonify({"msg": "User tidak memiliki institusi."}), 400
-
-    try:
-        cycles = RscaCycle.query.filter_by(
-            institution=user.institution
-        ).order_by(RscaCycle.tanggal_mulai.desc()).all()
-        return RscaCycleSchema(many=True).jsonify(cycles), 200
-    except Exception as e:
-        print(f"Error di get_rsca_cycles: {e}")
-        return jsonify({"msg": "Gagal mengambil siklus RSCA", "error": str(e)}), 500
-
-
-@admin_bp.route('/rsca-cycles', methods=['POST'])
-@jwt_required()
-@permission_required('manage_rsca_cycles')
-def create_rsca_cycle():
-    """Membuat siklus RSCA baru UNTUK institusi user."""
-    data = request.get_json()
-    if not data or 'nama_siklus' not in data:
-        return jsonify({"msg": "Data tidak lengkap"}), 400
-
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    if not user or not user.institution:
-        return jsonify({"msg": "User tidak memiliki institusi."}), 400
-
-    department_ids = data.get('department_ids', [])
-    
-    departments = Department.query.filter(
-        Department.id.in_(department_ids),
-        Department.institution == user.institution
-    ).all()
-    
-    new_cycle = RscaCycle(
-        nama_siklus=data['nama_siklus'],
-        tanggal_mulai=data.get('tanggal_mulai'),
-        tanggal_selesai=data.get('tanggal_selesai'),
-        status='Draft',
-        institution=user.institution
-    )
-    new_cycle.departments.extend(departments)
-    
-    db.session.add(new_cycle)
-    db.session.commit()
-    
-    return RscaCycleSchema().jsonify(new_cycle), 201
-
-@admin_bp.route('/rsca-cycles/<int:cycle_id>', methods=['PUT'])
-@jwt_required()
-@permission_required('manage_rsca_cycles')
-def update_rsca_cycle(cycle_id):
-    """
-    Update detail siklus RSCA (nama, tanggal, departemen).
-    """
-    cycle = RscaCycle.query.get_or_404(cycle_id)
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-
-    # 1. Validasi Keamanan (Institusi)
-    if not user or not user.institution or cycle.institution != user.institution:
-        return jsonify({"msg": "Akses ditolak (Beda Institusi)."}), 403
-
-    data = request.get_json()
-    if not data:
-        return jsonify({"msg": "Data tidak boleh kosong"}), 400
-
-    # 2. Update field dasar (Nama & Tanggal)
-    if 'nama_siklus' in data:
-        cycle.nama_siklus = data['nama_siklus']
-    
-    # Update tanggal dengan penanganan string kosong atau null
-    try:
-        if 'tanggal_mulai' in data:
-            cycle.tanggal_mulai = datetime.strptime(data['tanggal_mulai'], '%Y-%m-%d').date() if data['tanggal_mulai'] else None
-        if 'tanggal_selesai' in data:
-            cycle.tanggal_selesai = datetime.strptime(data['tanggal_selesai'], '%Y-%m-%d').date() if data['tanggal_selesai'] else None
-    except ValueError:
-        return jsonify({"msg": "Format tanggal salah. Gunakan YYYY-MM-DD atau null."}), 400
-    
-    # 3. Update relasi departemen (jika dikirim)
-    if 'department_ids' in data:
-        if not isinstance(data['department_ids'], list):
-            return jsonify({"msg": "department_ids harus berupa list."}), 400
-        
-        # Ambil departemen HANYA dari institusi user
-        new_depts = Department.query.filter(
-            Department.id.in_(data['department_ids']),
-            Department.institution == user.institution
-        ).all()
-        cycle.departments = new_depts # Ganti list departemen yang lama
-
-    db.session.commit()
-    
-    # Kembalikan data siklus yang sudah di-update (termasuk departemen baru)
-    return RscaCycleSchema().dump(cycle), 200
-
-@admin_bp.route('/rsca-cycles/<int:cycle_id>/questionnaire', methods=['GET'])
-@jwt_required()
-@permission_required('manage_rsca_cycles')
-def get_cycle_questionnaire(cycle_id):
-    """Mengambil semua pertanyaan untuk satu siklus (admin)."""
-    questions = RscaQuestionnaire.query.filter_by(cycle_id=cycle_id).all()
-    return RscaQuestionnaireSchema(many=True).jsonify(questions), 200
-
-@admin_bp.route('/rsca-cycles/<int:cycle_id>/questionnaire', methods=['POST'])
-@jwt_required()
-@permission_required('manage_rsca_cycles')
-def add_question_to_cycle(cycle_id):
-    """Menambahkan pertanyaan baru ke siklus."""
-    data = request.get_json()
-    if not data or 'pertanyaan' not in data or 'question_type' not in data:
-        return jsonify({"msg": "Data pertanyaan tidak lengkap"}), 400
-        
-    new_question = RscaQuestionnaire(
-        pertanyaan=data['pertanyaan'],
-        kategori=data.get('kategori'),
-        question_type=data['question_type'], # 'text' or 'control_assessment'
-        cycle_id=cycle_id
-    )
-    db.session.add(new_question)
-    db.session.commit()
-    return RscaQuestionnaireSchema().jsonify(new_question), 201
-
-@admin_bp.route('/rsca-questionnaire/<int:question_id>', methods=['PUT'])
-@jwt_required()
-@permission_required('manage_rsca_cycles')
-def update_question(question_id):
-    """Update pertanyaan kuesioner."""
-    question = RscaQuestionnaire.query.get_or_404(question_id)
-    data = request.get_json()
-    
-    question.pertanyaan = data.get('pertanyaan', question.pertanyaan)
-    question.kategori = data.get('kategori', question.kategori)
-    question.question_type = data.get('question_type', question.question_type)
-    
-    db.session.commit()
-    return RscaQuestionnaireSchema().jsonify(question), 200
-
-@admin_bp.route('/rsca-questionnaire/<int:question_id>', methods=['DELETE'])
-@jwt_required()
-@permission_required('manage_rsca_cycles')
-def delete_question(question_id):
-    """Menghapus pertanyaan kuesioner."""
-    question = RscaQuestionnaire.query.get_or_404(question_id)
-    db.session.delete(question)
-    db.session.commit()
-    return jsonify({"msg": "Pertanyaan berhasil dihapus"}), 200
-
-@admin_bp.route('/rsca-cycles/<int:cycle_id>/results', methods=['GET'])
-@jwt_required()
-@permission_required('manage_rsca_cycles') # Amankan dengan permission yang sama
-def get_rsca_cycle_results(cycle_id):
-    """
-    Mengambil semua hasil (jawaban) untuk satu siklus RSCA,
-    hanya untuk institusi Manajer Risiko.
-    """
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    cycle = RscaCycle.query.get_or_404(cycle_id)
-    
-    # Validasi Institusi (Keamanan Data)
-    if not user or not user.institution or user.institution != cycle.institution:
-        return jsonify({"msg": "Akses ditolak (Beda Institusi)."}), 403
-    
-    # Ambil semua jawaban untuk siklus ini
-    answers = RscaAnswer.query.filter_by(cycle_id=cycle_id).all()
-    
-    submitted_risks = SubmittedRisk.query.filter_by(cycle_id=cycle_id).order_by(SubmittedRisk.status, SubmittedRisk.created_at.desc()).all()
-    
-    return jsonify({
-        "cycle": RscaCycleSchema().dump(cycle),
-        "answers": RscaAnswerSchema(many=True).dump(answers),
-        "submitted_risks": SubmittedRiskSchema(many=True).dump(submitted_risks),
-        "ai_summary": cycle.ai_summary or None # Kirim juga summary AI jika ada
-    }), 200
-    
-@admin_bp.route('/submitted-risks/<int:risk_id>/status', methods=['PUT'])
-@jwt_required()
-@permission_required('manage_rsca_cycles') # Amankan dengan permission yang relevan
-def update_submitted_risk_status(risk_id):
-    """
-    Menyetujui atau menolak 'Ajuan Risiko' (Bottom-Up) dari Staf.
-    """
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    submitted_risk = SubmittedRisk.query.get_or_404(risk_id)
-    
-    # 1. Validasi Keamanan (Institusi)
-    if not user or not user.institution or submitted_risk.institution != user.institution:
-        return jsonify({"msg": "Akses ditolak (Beda Institusi)."}), 403
-
-    data = request.get_json()
-    new_status = data.get('status')
-
-    # 2. Validasi Status
-    if new_status not in ['Disetujui', 'Ditolak']:
-        return jsonify({"msg": "Status baru tidak valid."}), 400
-        
-    # 3. Update status
-    submitted_risk.status = new_status
-    
-    db.session.commit()
-    
-    # 4. Kembalikan data yang sudah di-update
-    return jsonify({
-        "msg": f"Status ajuan risiko berhasil diubah menjadi '{new_status}'.",
-        "submitted_risk": SubmittedRiskSchema().dump(submitted_risk) # Kirim data terbaru
-    }), 200
-    
-@admin_bp.route('/action-plans', methods=['POST'])
-@jwt_required()
-@permission_required('manage_rsca_cycles') # Kita gunakan permission yang sama
-def create_action_plan():
-    """
-    Membuat Rencana Aksi (Mitigasi) baru.
-    """
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    if not user or not user.institution:
-        return jsonify({"msg": "User tidak valid atau tidak memiliki institusi."}), 400
-
-    data = request.get_json()
-    if not data or not data.get('action_description') or not data.get('assigned_department_id'):
-        return jsonify({"msg": "Deskripsi aksi dan departemen penanggung jawab wajib diisi."}), 400
-
-    # 1. Validasi Keamanan: Cek Departemen Penanggung Jawab
-    assigned_dept_id = data.get('assigned_department_id')
-    assigned_dept = Department.query.get(assigned_dept_id)
-    if not assigned_dept or assigned_dept.institution != user.institution:
-        return jsonify({"msg": "Departemen penanggung jawab tidak valid untuk institusi Anda."}), 403
-
-    # 2. Ambil data opsional (sumber masalah)
-    origin_answer_id = data.get('origin_answer_id')
-    origin_submitted_risk_id = data.get('origin_submitted_risk_id')
-
-    # 3. Validasi Keamanan: Cek Sumber Masalah (jika ada)
-    # Ini memastikan Manajer Risiko tidak bisa "mencomot" temuan dari institusi lain
-    if origin_answer_id:
-        answer = RscaAnswer.query.get(origin_answer_id)
-        if not answer or answer.cycle.institution != user.institution:
-            return jsonify({"msg": "Jawaban (sumber) tidak valid."}), 403
-    
-    if origin_submitted_risk_id:
-        submitted_risk = SubmittedRisk.query.get(origin_submitted_risk_id)
-        if not submitted_risk or submitted_risk.institution != user.institution:
-            return jsonify({"msg": "Ajuan risiko (sumber) tidak valid."}), 403
-    
-    # 4. Ambil Tanggal (parse dengan aman)
-    due_date_obj = None
-    if data.get('due_date'): # Frontend harus mengirim format "YYYY-MM-DD"
-        try:
-            due_date_obj = datetime.strptime(data['due_date'], '%Y-%m-%d').date()
-        except ValueError:
-            return jsonify({"msg": "Format tanggal salah. Gunakan YYYY-MM-DD."}), 400
-
-    # 5. Buat ActionPlan
-    new_action_plan = ActionPlan(
-        action_description=data['action_description'],
-        status='Belum Mulai', # Default status
-        due_date=due_date_obj,
-        assigned_department_id=assigned_dept_id,
-        created_by_user_id=user.id,
-        institution=user.institution,
-        origin_answer_id=origin_answer_id,
-        origin_submitted_risk_id=origin_submitted_risk_id
-    )
-    
-    db.session.add(new_action_plan)
-    db.session.commit()
-
-    return jsonify({
-        "msg": "Rencana aksi berhasil dibuat.",
-        "action_plan": ActionPlanSchema().dump(new_action_plan)
-    }), 201
-    
-@admin_bp.route('/action-plans', methods=['GET'])
-@jwt_required()
-@permission_required('view_mitigation_monitor') # Amankan dengan permission baru
-def get_all_action_plans():
-    """
-    Mengambil SEMUA Rencana Aksi (Mitigasi) untuk institusi Manajer Risiko.
-    """
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    if not user or not user.institution:
-        return jsonify({"msg": "User tidak valid atau tidak memiliki institusi."}), 400
-
-    # Ambil semua Rencana Aksi yang institusinya cocok dengan user
-    action_plans = ActionPlan.query.filter_by(
-        institution=user.institution
-    ).order_by(ActionPlan.due_date.asc(), ActionPlan.created_at.desc()).all()
-    
-    return ActionPlanSchema(many=True).jsonify(action_plans), 200
-
-@admin_bp.route('/action-plans/<int:plan_id>/status', methods=['PUT'])
-@jwt_required()
-@permission_required('view_mitigation_monitor') # Kita gunakan permission yang sama
-def update_action_plan_status(plan_id):
-    """
-    Update status Rencana Aksi (misal: Selesai, Sedang Dikerjakan).
-    """
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    action_plan = ActionPlan.query.get_or_404(plan_id)
-
-    # 1. Validasi Keamanan (Institusi)
-    if not user or not user.institution or action_plan.institution != user.institution:
-        return jsonify({"msg": "Akses ditolak (Beda Institusi)."}), 403
-
-    data = request.get_json()
-    new_status = data.get('status')
-
-    # 2. Validasi Status (agar datanya bersih)
-    allowed_statuses = ['Belum Mulai', 'Sedang Dikerjakan', 'Selesai', 'Dibatalkan']
-    if not new_status or new_status not in allowed_statuses:
-        return jsonify({"msg": "Status baru tidak valid."}), 400
-        
-    # 3. Update status
-    action_plan.status = new_status
-    
-    db.session.commit()
-    
-    # 4. Kembalikan data yang sudah di-update
-    return jsonify({
-        "msg": f"Status Rencana Aksi berhasil diubah menjadi '{new_status}'.",
-        "action_plan": ActionPlanSchema().dump(action_plan) # Kirim data terbaru
-    }), 200
     
 @admin_bp.route('/system-config/api-key', methods=['GET', 'POST'])
 @admin_required()

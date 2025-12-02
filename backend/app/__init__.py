@@ -46,31 +46,15 @@ def create_app():
     with app.app_context():
         # Import blueprint dari setiap file di folder routes
         from .routes.auth import auth_bp
-        from .routes.dashboard import dashboard_bp
-        from .routes.risk_ai import risk_ai_bp
-        from .routes.risk_register import risk_register_bp
         from .routes.risk_management_levels import risk_management_levels_bp
-        from .routes.bia import bia_bp
-        from .routes.bpr import bpr_bp
-        from .routes.rsca import rsca_bp
         from .routes.master_data import master_data_bp
         from .routes.admin import admin_bp
-        from .routes.horizon import horizon_bp
-        from app.routes.qrc import qrc_bp
 
         # Daftarkan semua blueprint ke aplikasi
         app.register_blueprint(auth_bp, url_prefix='/api')
-        app.register_blueprint(dashboard_bp, url_prefix='/api')
-        app.register_blueprint(risk_ai_bp, url_prefix='/api')
-        app.register_blueprint(risk_register_bp, url_prefix='/api')
         app.register_blueprint(risk_management_levels_bp, url_prefix='/api')
-        app.register_blueprint(bia_bp, url_prefix='/api')
-        app.register_blueprint(bpr_bp, url_prefix='/api')
-        app.register_blueprint(rsca_bp, url_prefix='/api')
         app.register_blueprint(master_data_bp, url_prefix='/api')
         app.register_blueprint(admin_bp, url_prefix='/api/admin')
-        app.register_blueprint(horizon_bp, url_prefix='/api')
-        app.register_blueprint(qrc_bp, url_prefix='/api/qrc')
         
     @app.route('/uploads/<path:filename>')
     def serve_uploaded_file(filename):

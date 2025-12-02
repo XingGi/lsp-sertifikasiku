@@ -41,8 +41,6 @@ class Department(db.Model):
     institution = db.Column(db.String(255), nullable=True)
     
     users = db.relationship('User', back_populates='department')
-    # Relasi rsca_cycles menggunakan string reference untuk menghindari circular import di top-level
-    rsca_cycles = db.relationship('RscaCycle', secondary='rsca_cycle_departments', back_populates='departments')
 
     def __repr__(self):
         return f'<Department {self.name}>'
@@ -61,17 +59,12 @@ class User(db.Model):
     # Limits
     limit_dasar = db.Column(db.Integer, nullable=True, default=10)
     limit_madya = db.Column(db.Integer, nullable=True, default=5)
-    limit_ai = db.Column(db.Integer, nullable=True, default=15)
     limit_template_peta = db.Column(db.Integer, nullable=True, default=5)
-    limit_horizon = db.Column(db.Integer, nullable=True, default=5)
-    limit_qrc_standard = db.Column(db.Integer, nullable=True, default=2)
-    limit_qrc_essay = db.Column(db.Integer, nullable=True, default=1)
     
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
     department = db.relationship('Department', back_populates='users')
     
     # String references untuk relasi agar tidak perlu import file lain di sini (mencegah circular import)
-    kris = db.relationship('KRI', backref='owner', lazy=True, cascade="all, delete-orphan")
     assessments = db.relationship('RiskAssessment', backref='assessor', lazy=True, cascade="all, delete-orphan")
     critical_assets = db.relationship('CriticalAsset', backref='owner', lazy=True, cascade="all, delete-orphan")
     impact_scenarios = db.relationship('ImpactScenario', backref='owner', lazy=True, cascade="all, delete-orphan")
