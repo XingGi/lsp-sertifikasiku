@@ -3,7 +3,7 @@ import React from "react";
 import { Dialog, DialogPanel, Title, Text, Button, Icon } from "@tremor/react";
 import { FiAlertTriangle } from "react-icons/fi";
 
-function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message, isLoading = false, confirmButtonText = "Hapus", confirmButtonColor = "rose" }) {
+function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message, isLoading = false, confirmButtonText = "Hapus", confirmButtonColor = "red" }) {
   return (
     <Dialog open={isOpen} onClose={() => !isLoading && onClose()} static={true} className="z-[100]">
       <DialogPanel className="max-w-md">
@@ -13,10 +13,10 @@ function ConfirmationDialog({ isOpen, onClose, onConfirm, title, message, isLoad
           <Text className="mt-2">{message}</Text>
         </div>
         <div className="mt-8 flex justify-end gap-2">
-          <Button variant="secondary" className="rounded-md" onClick={onClose} disabled={isLoading}>
+          <Button variant="secondary" color="indigo" className="rounded-md" onClick={onClose} disabled={isLoading}>
             Batal
           </Button>
-          <Button onClick={onConfirm} loading={isLoading} disabled={isLoading} className="rounded-md" color={confirmButtonColor}>
+          <Button onClick={onConfirm} loading={isLoading} disabled={isLoading} className="rounded-md text-red-600 hover:bg-red-600 hover:text-white" color={confirmButtonColor}>
             {confirmButtonText}
           </Button>
         </div>

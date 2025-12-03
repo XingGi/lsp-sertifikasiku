@@ -385,7 +385,9 @@ function BasicAssessmentListPage() {
             </div>
           </div>
           <div className="flex justify-end mt-8">
-            <Button onClick={() => setIsDisclaimerOpen(false)}>OK, Saya Mengerti</Button>
+            <Button className="rounded-md" color="blue" onClick={() => setIsDisclaimerOpen(false)}>
+              OK, Saya Mengerti
+            </Button>
           </div>
         </DialogPanel>
       </Dialog>

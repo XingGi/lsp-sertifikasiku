@@ -49,12 +49,16 @@ def create_app():
         from .routes.risk_management_levels import risk_management_levels_bp
         from .routes.master_data import master_data_bp
         from .routes.admin import admin_bp
+        from .routes.competency import competency_bp
+        from .routes.competency_master import competency_master_bp
 
         # Daftarkan semua blueprint ke aplikasi
         app.register_blueprint(auth_bp, url_prefix='/api')
         app.register_blueprint(risk_management_levels_bp, url_prefix='/api')
         app.register_blueprint(master_data_bp, url_prefix='/api')
         app.register_blueprint(admin_bp, url_prefix='/api/admin')
+        app.register_blueprint(competency_bp, url_prefix='/api')
+        app.register_blueprint(competency_master_bp, url_prefix='/api')
         
     @app.route('/uploads/<path:filename>')
     def serve_uploaded_file(filename):

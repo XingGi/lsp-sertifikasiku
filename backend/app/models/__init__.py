@@ -17,5 +17,8 @@ from .madya import (
     OrganizationalStructureEntry, SasaranOrganisasiKPI, RiskInputMadya
 )
 
+from .competency_master import CompetencyUnit, CertificationScheme
+from .competency import CompetencyTest
+
 # Pastikan 'db' tersedia jika ada file lain yang mengimportnya dari sini (opsional tapi aman)
 from app import db

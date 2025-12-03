@@ -4,11 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   FiGrid,
-  FiCheckSquare,
-  FiList,
-  FiBriefcase,
-  FiBarChart2,
-  FiAlertTriangle,
   FiLogOut,
   FiChevronsLeft,
   FiDatabase,
@@ -24,15 +19,8 @@ import {
   FiMoreVertical,
   FiUser,
   FiLock,
-  FiBox,
-  FiShuffle,
-  FiFileText,
-  FiActivity,
-  FiGlobe,
-  FiZap,
-  FiPieChart,
   FiCommand,
-  FiCpu,
+  FiCheckCircle,
 } from "react-icons/fi";
 import { HiCalculator } from "react-icons/hi";
 import { useAuth } from "../../context/AuthContext";
@@ -52,6 +40,12 @@ const menuItems = [
       { title: "Template Peta", path: "/risk-management/templates", icon: <FiMap />, requiredPermission: "view_risk_templates" },
     ],
   },
+  {
+    title: "Uji Kompetensi",
+    path: "/uji-kompetensi",
+    icon: <FiCheckCircle />,
+    // requiredPermission: "view_uji_kompetensi" // Buka komen ini nanti kalau permission sudah diset di DB
+  },
 
   // GROUP: ADMIN
   {
@@ -64,6 +58,15 @@ const menuItems = [
       { title: "Master Regulasi", path: "/admin/regulations", icon: <FiBookOpen />, requiredPermission: "manage_regulations" },
       { title: "Role & Access", path: "/admin/roles", icon: <FiKey />, requiredPermission: "manage_roles" },
       { title: "Member Mgmt", path: "/admin/members", icon: <FiUsers />, requiredPermission: "manage_users" },
+      {
+        key: "master_competency",
+        title: "Master Unit Kompetensi",
+        icon: <FiDatabase />,
+        children: [
+          { title: "Gudang Unit", path: "/admin/master-units" },
+          { title: "Skema Sertifikasi", path: "/admin/master-schemes" },
+        ],
+      },
     ],
   },
 ];
@@ -102,8 +105,9 @@ function Sidebar({ isOpen, toggle }) {
     const checkExpand = (items) => {
       items.forEach((item) => {
         if (item.children && isItemActive(item)) {
-          if (!newExpandedKeys[item.key]) {
-            newExpandedKeys[item.key] = true;
+          const itemKey = item.key || item.title;
+          if (!newExpandedKeys[itemKey]) {
+            newExpandedKeys[itemKey] = true;
             hasChanges = true;
           }
           checkExpand(item.children);
@@ -178,13 +182,14 @@ function Sidebar({ isOpen, toggle }) {
     if (!canView) return null;
 
     const isActive = isItemActive(item);
+    const itemKey = item.key || item.title;
     const isExpanded = expandedKeys[item.key];
     const paddingLeft = getPaddingLeft(level);
 
     // JIKA PUNYA ANAK (SUBMENU)
     if (item.children && visibleChildren.length > 0) {
       return (
-        <div key={item.key} className="mb-1">
+        <div key={itemKey} className="mb-1">
           <button
             onClick={() => handleToggle(item.key)}
             className={`

@@ -25,6 +25,10 @@ import AccountSettingPage from "./features/account/AccountSettingPage";
 import PasswordSettingPage from "./features/account/PasswordSettingPage";
 import DepartmentAdminPage from "./features/admin/DepartmentAdminPage";
 import UnderConstructionPage from "./components/common/UnderConstructionPage";
+import UjiKompetensiListPage from "./features/uji-kompetensi/UjiKompetensiListPage";
+import UjiKompetensiStudioPage from "./features/uji-kompetensi/UjiKompetensiStudioPage";
+import MasterUnitPage from "./features/admin/competency/MasterUnitPage";
+import MasterSchemePage from "./features/admin/competency/MasterSchemePage";
 import ApiKeySettingPage from "./features/account/ApiKeySettingPage";
 import { FiActivity, FiCpu, FiPieChart } from "react-icons/fi";
 import { Title, Text } from "@tremor/react";
@@ -42,7 +46,6 @@ function App() {
       <Routes>
         {/* Rute Publik */}
         <Route path="/" element={<LandingPage />} />
-        {/* Rute Terlindungi */}
         <Route element={<ProtectedRoute />}>
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route element={<Layout />}>
@@ -70,6 +73,9 @@ function App() {
               <Route path="/risk-management/templates/new" element={<TemplateEditorPage />} />
               <Route path="/risk-management/templates/edit/:templateId" element={<TemplateEditorPage />} />
             </Route>
+            {/* Route UjiKompetensi */}
+            <Route path="/uji-kompetensi" element={<UjiKompetensiListPage />} />
+            <Route path="/uji-kompetensi/studio/:id" element={<UjiKompetensiStudioPage />} />
 
             {/* Admin (semua route di dalamnya butuh role admin atau permission spesifik) */}
             <Route element={<ProtectedRoute requiredPermission="view_admin_area" />}>
@@ -79,6 +85,8 @@ function App() {
               <Route path="/admin/members" element={<MemberPage />} />
               <Route path="/admin/departments" element={<DepartmentAdminPage />} />
               <Route path="/account/api-key" element={<ApiKeySettingPage />} />
+              <Route path="/admin/master-units" element={<MasterUnitPage />} />
+              <Route path="/admin/master-schemes" element={<MasterSchemePage />} />
             </Route>
           </Route>
         </Route>
