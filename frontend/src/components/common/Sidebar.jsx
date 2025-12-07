@@ -41,10 +41,20 @@ const menuItems = [
     ],
   },
   {
+    key: "uji_komp_group", // Wajib ada key unik
     title: "Uji Kompetensi",
-    path: "/uji-kompetensi",
     icon: <FiCheckCircle />,
-    // requiredPermission: "view_uji_kompetensi" // Buka komen ini nanti kalau permission sudah diset di DB
+    children: [
+      {
+        title: "Uji Kompetensi Saya",
+        path: "/uji-kompetensi",
+      },
+      {
+        title: "Monitoring (Admin)",
+        path: "/admin/monitoring",
+        requiredPermission: "view_admin_area",
+      },
+    ],
   },
 
   // GROUP: ADMIN

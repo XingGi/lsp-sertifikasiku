@@ -6,10 +6,12 @@ import { FiPlus, FiLayers, FiCheck, FiX, FiSearch, FiFilter, FiEdit2, FiTrash2, 
 import apiClient from "../../../api/api";
 import AppResourceTable from "../../../components/common/AppResourceTable";
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
-import UnitSelectionWidget from "./../competency/UnitSelectionWidget";
+import UnitSelectionWidget from "./components/UnitSelectionWidget";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 function MasterSchemePage() {
+  const navigate = useNavigate();
   // --- STATE UTAMA ---
   const [schemes, setSchemes] = useState([]);
   const [allUnits, setAllUnits] = useState([]);
@@ -76,21 +78,11 @@ function MasterSchemePage() {
 
   // --- HANDLERS ---
   const handleOpenAdd = () => {
-    setFormData({ id: null, code: "", title: "", description: "", unit_ids: [] });
-    setIsEditMode(false);
-    setIsModalOpen(true);
+    navigate("/admin/master-schemes/new");
   };
 
   const handleOpenEdit = (item) => {
-    setFormData({
-      id: item.id,
-      code: item.code || "",
-      title: item.title,
-      description: item.description || "",
-      unit_ids: item.unit_ids || [],
-    });
-    setIsEditMode(true);
-    setIsModalOpen(true);
+    navigate(`/admin/master-schemes/edit/${item.id}`);
   };
 
   // HANDLER BARU: Open View Modal
@@ -383,88 +375,6 @@ function MasterSchemePage() {
             <Button variant="secondary" className="rounded-lg border-2 hover:bg-rose-800 hover:border-rose-600 hover:text-white" color="emerald" onClick={() => setViewModal({ ...viewModal, isOpen: false })}>
               Tutup
             </Button>
-          </div>
-        </DialogPanel>
-      </Dialog>
-
-      {/* --- MODAL CREATE/EDIT (EXISTING) --- */}
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} static={true}>
-        <DialogPanel className="max-w-5xl w-full p-0 overflow-hidden rounded-2xl bg-white shadow-2xl h-[85vh] flex flex-col transform transition-all">
-          {/* ... (Kode Modal Create/Edit Tetap Sama, Tidak Perlu Diubah) ... */}
-          {/* Header Create/Edit */}
-          <div className="px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600 flex justify-between items-start flex-shrink-0 text-white relative overflow-hidden">
-            <div className="absolute top-[-20px] right-[-20px] w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-1">
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">{isEditMode ? <FiEdit2 size={24} /> : <FiPlus size={24} />}</div>
-                <Title className="text-white text-2xl font-bold tracking-tight">{isEditMode ? "Edit Skema Sertifikasi" : "Buat Skema Baru"}</Title>
-              </div>
-              <Text className="text-indigo-100 opacity-90 ml-1">{isEditMode ? "Perbarui detail skema dan unit kompetensi." : "Definisikan paket kompetensi baru dan pilih unit terkait."}</Text>
-            </div>
-            <button onClick={() => setIsModalOpen(false)} className="relative z-10 text-white/70 hover:text-white hover:bg-white/20 p-2 rounded-full transition-colors">
-              <FiX size={24} />
-            </button>
-          </div>
-
-          {/* Body Create/Edit */}
-          <div className="flex-1 overflow-hidden flex flex-col md:flex-row bg-slate-50">
-            <div className="w-full md:w-1/3 p-6 overflow-y-auto border-r border-gray-200 bg-white shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 text-indigo-900 font-bold border-b border-indigo-100 pb-2 mb-4">
-                  <FiFileText /> Informasi Dasar
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kode Skema</label>
-                  <TextInput icon={FiHash} value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value })} placeholder="Contoh: SKM-001" className="font-mono" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Judul Skema <span className="text-rose-500">*</span>
-                  </label>
-                  <TextInput value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="Nama Skema Sertifikasi" required />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Deskripsi</label>
-                  <textarea
-                    className="w-full rounded-lg border-gray-200 text-sm focus:ring-2 focus:ring-indigo-500 min-h-[120px] p-3 shadow-sm"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Tuliskan deskripsi singkat..."
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="w-full md:w-2/3 p-6 overflow-y-auto bg-slate-50/50">
-              <div className="flex flex-col h-full">
-                <div className="flex items-center gap-2 text-indigo-900 font-bold border-b border-indigo-100 pb-2 mb-4">
-                  <FiCpu /> Konfigurasi Unit Kompetensi
-                </div>
-                <div className="flex-1 min-h-[400px]">
-                  <UnitSelectionWidget allUnits={allUnits} selectedUnitIds={formData.unit_ids} onChange={(newIds) => setFormData({ ...formData, unit_ids: newIds })} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Create/Edit */}
-          <div className="p-5 border-t border-gray-200 bg-white flex justify-between items-center flex-shrink-0 z-20">
-            <div className="text-sm text-gray-500 italic">
-              {formData.unit_ids.length > 0 ? (
-                <span>
-                  <span className="font-bold text-indigo-600">{formData.unit_ids.length}</span> unit kompetensi dipilih.
-                </span>
-              ) : (
-                "Belum ada unit dipilih."
-              )}
-            </div>
-            <div className="flex gap-3">
-              <Button variant="secondary" className="rounded-lg" color="rose" onClick={() => setIsModalOpen(false)}>
-                Batal
-              </Button>
-              <Button icon={FiCheck} loading={isSaving} onClick={handleSave} className="text-white bg-indigo-600 hover:bg-indigo-700 border-indigo-600 shadow-lg shadow-indigo-200 rounded-lg">
-                {isEditMode ? "Simpan Perubahan" : "Simpan Skema"}
-              </Button>
-            </div>
           </div>
         </DialogPanel>
       </Dialog>

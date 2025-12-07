@@ -51,6 +51,7 @@ def create_app():
         from .routes.admin import admin_bp
         from .routes.competency import competency_bp
         from .routes.competency_master import competency_master_bp
+        from .routes.workflow_engine import workflow_engine_bp
 
         # Daftarkan semua blueprint ke aplikasi
         app.register_blueprint(auth_bp, url_prefix='/api')
@@ -59,6 +60,7 @@ def create_app():
         app.register_blueprint(admin_bp, url_prefix='/api/admin')
         app.register_blueprint(competency_bp, url_prefix='/api')
         app.register_blueprint(competency_master_bp, url_prefix='/api')
+        app.register_blueprint(workflow_engine_bp, url_prefix='/api')
         
     @app.route('/uploads/<path:filename>')
     def serve_uploaded_file(filename):

@@ -30,6 +30,8 @@ import UjiKompetensiStudioPage from "./features/uji-kompetensi/UjiKompetensiStud
 import MasterUnitPage from "./features/admin/competency/MasterUnitPage";
 import MasterSchemePage from "./features/admin/competency/MasterSchemePage";
 import ApiKeySettingPage from "./features/account/ApiKeySettingPage";
+import AssessmentMonitoringPage from "./features/admin/monitoring/AssessmentMonitoringPage";
+import MasterSchemeFormPage from "./features/admin/competency/MasterSchemeFormPage";
 import { FiActivity, FiCpu, FiPieChart } from "react-icons/fi";
 import { Title, Text } from "@tremor/react";
 const PlaceholderComponent = ({ title }) => (
@@ -87,6 +89,9 @@ function App() {
               <Route path="/account/api-key" element={<ApiKeySettingPage />} />
               <Route path="/admin/master-units" element={<MasterUnitPage />} />
               <Route path="/admin/master-schemes" element={<MasterSchemePage />} />
+              <Route path="/admin/monitoring" element={<AssessmentMonitoringPage />} />
+              <Route path="/admin/master-schemes/new" element={<MasterSchemeFormPage />} />
+              <Route path="/admin/master-schemes/edit/:id" element={<MasterSchemeFormPage />} />
             </Route>
           </Route>
         </Route>

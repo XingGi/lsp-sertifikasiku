@@ -17,6 +17,7 @@ from .madya import (
     OrganizationalStructureEntry, SasaranOrganisasiKPI, RiskInputMadya
 )
 
+from .workflow import WorkflowTemplate, WorkflowStage, WorkflowTask, UjiKompProgress
 from .competency_master import CompetencyUnit, CertificationScheme
 from .competency import CompetencyTest
 

@@ -44,7 +44,7 @@ export default function ConfirmationAgreement({ isOpen, onClose, onConfirm, titl
           <Button variant="secondary" color="rose" onClick={onClose} disabled={isLoading} className="w-full sm:flex-1 py-2.5 rounded-md">
             {cancelText}
           </Button>
-          <Button variant="primary" color="indigo" onClick={onConfirm} loading={isLoading} icon={FiCheckCircle} className="text-indigo-600 w-full sm:flex-1 shadow-lg shadow-indigo-200 py-2.5 rounded-md hover:bg-indigo-600 hover:text-white">
+          <Button variant="primary" color="indigo" onClick={onConfirm} loading={isLoading} icon={FiCheckCircle} className="text-white w-full sm:flex-1 shadow-lg shadow-indigo-200 py-2.5 rounded-md hover:bg-indigo-600 hover:text-white">
             {confirmText}
           </Button>
         </div>

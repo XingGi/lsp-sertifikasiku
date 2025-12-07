@@ -153,16 +153,28 @@ def get_schemes():
 
     # 4. Pagination
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    
+    # 5. Format Data (FIX: Hitung unit lewat job_groups)
+    data_list = []
+    for s in pagination.items:
+        # Kumpulkan semua ID unit dari semua kelompok pekerjaan di skema ini
+        # Pakai set() biar kalau ada unit yang sama di kelompok beda, gak dihitung dobel
+        unique_unit_ids = set()
+        for group in s.job_groups:
+            for unit in group.units:
+                unique_unit_ids.add(unit.id)
 
-    return jsonify({
-        "data": [{
+        data_list.append({
             'id': s.id,
             'code': s.code,
             'title': s.title,
             'description': s.description,
-            'unit_count': len(s.units),
-            'unit_ids': [u.id for u in s.units] 
-        } for s in pagination.items],
+            'unit_count': len(unique_unit_ids), # Hitung jumlah unit unik
+            'unit_ids': list(unique_unit_ids)   # Kirim list ID buat keperluan frontend (misal pre-fill)
+        })
+
+    return jsonify({
+        "data": data_list,
         "meta": {
             "total_items": pagination.total,
             "total_pages": pagination.pages,
@@ -175,14 +187,45 @@ def get_schemes():
 @jwt_required()
 def get_scheme_detail(id):
     scheme = CertificationScheme.query.get_or_404(id)
+    
+    # Format Data Hierarki
+    job_groups_data = []
+    total_units = 0
+    
+    for group in scheme.job_groups:
+        units_data = [{
+            'id': u.id, 
+            'code': u.code, 
+            'title': u.title,
+            'standard_type': u.standard_type
+        } for u in group.units]
+        
+        evidences_data = [{
+            'id': e.id,
+            'name': e.name,
+            'description': e.description,
+            'is_mandatory': e.is_mandatory
+        } for e in group.evidences]
+        
+        total_units += len(units_data)
+        
+        job_groups_data.append({
+            'id': group.id,
+            'name': group.name,
+            'units': units_data,
+            'evidences': evidences_data
+        })
+
     return jsonify({
         'id': scheme.id,
         'code': scheme.code,
         'title': scheme.title,
         'description': scheme.description,
-        'units': [{'id': u.id, 'code': u.code, 'title': u.title, 'standard_type': u.standard_type} for u in scheme.units]
+        'job_groups': job_groups_data,
+        'unit_count': total_units # Helper info
     }), 200
 
+# --- CREATE SCHEME (NESTED) ---
 @competency_master_bp.route('/master/schemes', methods=['POST'])
 @admin_required()
 def create_scheme():
@@ -190,44 +233,83 @@ def create_scheme():
     if not data.get('title'):
         return jsonify({"msg": "Judul skema wajib diisi"}), 400
 
+    # 1. Buat Skema Induk
     new_scheme = CertificationScheme(
         code=data.get('code'),
         title=data['title'],
         description=data.get('description')
     )
-    
-    # Assign Units (Expect list of IDs: [1, 2, 5])
-    if 'unit_ids' in data and isinstance(data['unit_ids'], list):
-        units = CompetencyUnit.query.filter(CompetencyUnit.id.in_(data['unit_ids'])).all()
-        new_scheme.units = units
-
     db.session.add(new_scheme)
+    db.session.flush() # Dapatkan ID
+
+    # 2. Loop Kelompok Pekerjaan
+    job_groups_raw = data.get('job_groups', [])
+    for group_data in job_groups_raw:
+        new_group = SchemeJobGroup(
+            scheme_id=new_scheme.id,
+            name=group_data.get('name', 'Tanpa Nama')
+        )
+        
+        # Assign Unit (Dari ID)
+        unit_ids = group_data.get('unit_ids', [])
+        if unit_ids:
+            units = CompetencyUnit.query.filter(CompetencyUnit.id.in_(unit_ids)).all()
+            new_group.units = units
+            
+        db.session.add(new_group)
+        db.session.flush()
+        
+        # Assign Bukti (Text Baru)
+        evidences_raw = group_data.get('evidences', [])
+        for ev_text in evidences_raw:
+            new_ev = SchemeEvidence(
+                job_group_id=new_group.id,
+                name=ev_text
+            )
+            db.session.add(new_ev)
+
     db.session.commit()
     return jsonify({"msg": "Skema berhasil dibuat"}), 201
 
+# --- UPDATE SCHEME (FULL REPLACE STRATEGY) ---
 @competency_master_bp.route('/master/schemes/<int:id>', methods=['PUT'])
 @admin_required()
 def update_scheme(id):
     scheme = CertificationScheme.query.get_or_404(id)
     data = request.get_json()
 
-    if not data.get('title'):
-        return jsonify({"msg": "Judul skema wajib diisi"}), 400
+    scheme.title = data.get('title', scheme.title)
+    scheme.code = data.get('code', scheme.code)
+    scheme.description = data.get('description', scheme.description)
 
-    # Cek kode unik kalau berubah
-    if data.get('code') and data['code'] != scheme.code:
-        if CertificationScheme.query.filter_by(code=data['code']).first():
-            return jsonify({"msg": "Kode skema sudah digunakan"}), 409
-
-    scheme.title = data['title']
-    scheme.code = data.get('code')
-    scheme.description = data.get('description')
-
-    # Update Relasi Units (Magic of SQLAlchemy)
-    # Dia bakal otomatis hapus yang gak ada di list, dan tambah yang baru
-    if 'unit_ids' in data and isinstance(data['unit_ids'], list):
-        units = CompetencyUnit.query.filter(CompetencyUnit.id.in_(data['unit_ids'])).all()
-        scheme.units = units
+    # Strategi: Hapus semua job group lama, buat ulang (paling aman untuk data bersarang)
+    # Karena cascade="all, delete-orphan", menghapus group akan menghapus evidence & relasi unitnya
+    for group in scheme.job_groups:
+        db.session.delete(group)
+    
+    # Re-create
+    job_groups_raw = data.get('job_groups', [])
+    for group_data in job_groups_raw:
+        new_group = SchemeJobGroup(
+            scheme_id=scheme.id,
+            name=group_data.get('name', 'Tanpa Nama')
+        )
+        
+        unit_ids = group_data.get('unit_ids', [])
+        if unit_ids:
+            units = CompetencyUnit.query.filter(CompetencyUnit.id.in_(unit_ids)).all()
+            new_group.units = units
+            
+        db.session.add(new_group)
+        db.session.flush() # butuh ID group buat evidence
+        
+        evidences_raw = group_data.get('evidences', []) # List of strings
+        for ev_text in evidences_raw:
+            new_ev = SchemeEvidence(
+                job_group_id=new_group.id,
+                name=ev_text
+            )
+            db.session.add(new_ev)
 
     db.session.commit()
     return jsonify({"msg": "Skema berhasil diperbarui"}), 200

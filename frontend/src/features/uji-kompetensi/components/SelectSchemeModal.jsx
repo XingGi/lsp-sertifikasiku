@@ -48,7 +48,7 @@ export default function SelectSchemeModal({ isOpen, onClose, onSelect }) {
 
     const userName = user?.nama_lengkap || "Asesi";
     const dateStr = new Date().toLocaleDateString("id-ID");
-    const autoTitle = `${scheme.title} - ${userName} (${dateStr})`;
+    const autoTitle = `${scheme.title} - ${userName}`;
 
     onSelect(scheme.id, autoTitle);
     setConfirmState({ isOpen: false, scheme: null });
